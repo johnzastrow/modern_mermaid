@@ -21,8 +21,8 @@ This plan follows the project workflow.
     - [ ] Update `vite.config.ts` to include the background script in the build.
 - [x] Task: Conductor - User Manual Verification 'Extension Behavior Optimization' (Protocol in workflow.md) (5731594)
 
-## Phase 3: Build and Validation
-- [~] Task: Verify Extension Loading
+## Phase 3: Build and Validation [checkpoint: 725ce1b]
+- [x] Task: Verify Extension Loading (725ce1b)
     - [ ] Build the project.
     - [ ] Instructions: Load the `dist` folder into Chrome (Developer Mode) and verify the popup opens.
-- [ ] Task: Conductor - User Manual Verification 'Build and Validation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Build and Validation' (Protocol in workflow.md) (725ce1b)
