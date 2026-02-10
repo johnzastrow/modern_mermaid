@@ -58,6 +58,17 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: isExtension ? 'dist-extension' : 'dist',
       sourcemap: isExtension,
+      rollupOptions: isExtension ? {
+        input: {
+          main: 'index.html',
+          background: 'src/background.ts'
+        },
+        output: {
+          entryFileNames: (chunkInfo) => {
+            return chunkInfo.name === 'background' ? '[name].js' : 'assets/[name]-[hash].js';
+          }
+        }
+      } : {}
     },
     server: {
       host: '0.0.0.0',
