@@ -6,7 +6,7 @@ This plan follows the project workflow.
 - [x] Task: Create Extension Manifest (9833493)
     - [ ] Create `public/manifest.json` with basic metadata, permissions, and `action` (popup).
     - [ ] Verify icons are correctly referenced.
-- [ ] Task: Configure Vite for Extension Output
+- [x] Task: Configure Vite for Extension Output (ac77cab)
     - [ ] Update `vite.config.ts` to ensure assets are correctly bundled for Chrome.
     - [ ] Add a build script alias if needed.
 - [ ] Task: Conductor - User Manual Verification 'Extension Scaffolding' (Protocol in workflow.md)
