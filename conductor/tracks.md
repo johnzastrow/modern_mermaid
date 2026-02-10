@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Chrome Extension Integration: Core Browser Extension Scaffolding**
+- [x] **Track: Chrome Extension Integration: Core Browser Extension Scaffolding**
   *Link: [./tracks/chrome_ext_20260210/](./tracks/chrome_ext_20260210/)*
