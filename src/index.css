@@ -24,6 +24,13 @@ body {
   min-height: 100vh;
 }
 
+/* Chrome Extension Popup Styles */
+.extension-popup {
+  width: 800px;
+  height: 600px;
+  overflow: hidden;
+}
+
 /* 隐藏 Mermaid 渲染的错误信息 */
 .mermaid-error,
 .error,

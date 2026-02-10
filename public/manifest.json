@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "A modern, beautiful Mermaid.js editor with custom themes and high-quality export.",
   "action": {
-    "default_popup": "index.html",
+    "default_popup": "index.html?mode=extension",
     "default_icon": {
       "16": "icon-192.png",
       "48": "icon-192.png",
