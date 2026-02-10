@@ -2,14 +2,14 @@
 
 This plan follows the project workflow.
 
-## Phase 1: Extension Scaffolding
+## Phase 1: Extension Scaffolding [checkpoint: fc3833d]
 - [x] Task: Create Extension Manifest (9833493)
     - [ ] Create `public/manifest.json` with basic metadata, permissions, and `action` (popup).
     - [ ] Verify icons are correctly referenced.
 - [x] Task: Configure Vite for Extension Output (ac77cab)
     - [ ] Update `vite.config.ts` to ensure assets are correctly bundled for Chrome.
     - [ ] Add a build script alias if needed.
-- [~] Task: Conductor - User Manual Verification 'Extension Scaffolding' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Extension Scaffolding' (Protocol in workflow.md) (fc3833d)
 
 ## Phase 2: Popup UI Optimization
 - [ ] Task: Adapt Layout for Popup
