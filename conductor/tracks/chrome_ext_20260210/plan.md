@@ -19,7 +19,7 @@ This plan follows the project workflow.
     - [ ] Remove `default_popup` from `manifest.json`.
     - [ ] Create a background service worker to handle `action.onClicked`.
     - [ ] Update `vite.config.ts` to include the background script in the build.
-- [~] Task: Conductor - User Manual Verification 'Extension Behavior Optimization' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Extension Behavior Optimization' (Protocol in workflow.md) (4eb5c35)
 
 ## Phase 3: Build and Validation
 - [ ] Task: Verify Extension Loading

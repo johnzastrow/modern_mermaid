@@ -15,6 +15,8 @@ describe('Chrome Extension Manifest', () => {
     expect(content.manifest_version).toBe(3);
     expect(content.name).toBe('Modern Mermaid');
     expect(content.action).toBeDefined();
-    expect(content.action.default_popup).toBe('index.html?mode=extension');
+    expect(content.action.default_popup).toBeUndefined();
+    expect(content.background).toBeDefined();
+    expect(content.background.service_worker).toBe('background.js');
   });
 });
