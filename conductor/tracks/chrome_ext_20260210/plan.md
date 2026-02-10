@@ -9,7 +9,7 @@ This plan follows the project workflow.
 - [x] Task: Configure Vite for Extension Output (ac77cab)
     - [ ] Update `vite.config.ts` to ensure assets are correctly bundled for Chrome.
     - [ ] Add a build script alias if needed.
-- [ ] Task: Conductor - User Manual Verification 'Extension Scaffolding' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Extension Scaffolding' (Protocol in workflow.md)
 
 ## Phase 2: Popup UI Optimization
 - [ ] Task: Adapt Layout for Popup
