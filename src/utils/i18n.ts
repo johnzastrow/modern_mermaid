@@ -134,6 +134,11 @@ export interface Translation {
   savedThemesLabel?: string;
   cornerRadius?: string;
   reloadDiagram?: string;
+  importConfig?: string;
+  importTitle?: string;
+  importHint?: string;
+  importError?: string;
+  loadTheme?: string;
 }
 
 export const translations: Record<Language, Translation> = {

@@ -12,6 +12,7 @@ import { themes } from '../utils/themes';
 import type { ThemeType, ThemeConfig } from '../utils/themes';
 import ThemeEditor from './ThemeEditor';
 import { loadSavedThemes, persistSavedThemes, makeBlankTheme, type SavedThemes } from '../utils/customThemes';
+import type { ExportableConfig } from '../utils/configExport';
 import { backgrounds, type BackgroundStyle } from '../utils/backgrounds';
 import { fonts, type FontOption } from '../utils/fonts';
 import type { AnnotationType } from '../types/annotation';
@@ -232,6 +233,24 @@ const Layout: React.FC = () => {
     persistSavedThemes(next);
   };
 
+  const handleImportTheme = (parsed: ExportableConfig) => {
+    // Build a self-contained editable theme from the imported config.
+    const base = makeBlankTheme('Imported theme');
+    const bg = typeof parsed.themeVariables?.background === 'string' ? parsed.themeVariables.background : undefined;
+    const imported: ThemeConfig = {
+      ...base,
+      ...(bg ? { bgClass: '', bgStyle: { backgroundColor: bg } } : {}),
+      mermaidConfig: {
+        ...base.mermaidConfig,
+        ...(parsed.theme ? { theme: parsed.theme } : {}),
+        themeVariables: { ...base.mermaidConfig.themeVariables, ...(parsed.themeVariables || {}) },
+        themeCSS: parsed.themeCSS ?? '',
+      },
+    };
+    setCustomTheme(imported);
+    setIsEditorOpen(true);
+  };
+
   // 示例选择处理
   const handleExampleSelect = (exampleCode: string, exampleId?: string) => {
     // 追踪示例选择
@@ -415,6 +434,7 @@ const Layout: React.FC = () => {
                 activeThemeConfig={activeThemeConfig}
                 savedThemes={savedThemes}
                 onCustomize={handleCustomize}
+                onImportTheme={handleImportTheme}
                 onSelectSavedTheme={handleSelectSavedTheme}
                 onDeleteSavedTheme={handleDeleteSavedTheme}
                 onThemeChange={handleThemeChange}
