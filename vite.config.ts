@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       !isExtension && VitePWA({
         registerType: 'autoUpdate',
+        // Emit an external registerSW.js instead of an inline <script>, so a
+        // strict Content-Security-Policy (script-src 'self') does not block it.
+        injectRegister: 'script',
         manifest: {
           name: "Modern Mermaid",
           short_name: "Mermaid",

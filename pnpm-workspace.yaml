@@ -1,0 +1,5 @@
+# pnpm blocks dependency install scripts by default (supply-chain hardening).
+# Only packages listed here are permitted to run their build/postinstall scripts.
+# esbuild is a trusted, first-party Vite dependency that compiles its native binary.
+onlyBuiltDependencies:
+  - esbuild

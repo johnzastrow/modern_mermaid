@@ -10,8 +10,6 @@ import ColorPicker from './ColorPicker';
 import AnnotationLayer from './AnnotationLayer';
 import AnnotationColorPicker from './AnnotationColorPicker';
 import type { Annotation, AnnotationType, Point } from '../types/annotation';
-import { trackEvent } from './GoogleAnalytics';
-import { AnalyticsEvents } from '../hooks/useAnalytics';
 
 interface PreviewProps {
   code: string;
@@ -154,24 +152,15 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
   // 缩放控制函数
   const handleZoomIn = () => {
     const newScale = Math.min(scale + 0.2, 5);
-    trackEvent(AnalyticsEvents.ZOOM_IN, {
-      scale: newScale
-    });
     setScale(newScale);
   };
 
   const handleZoomOut = () => {
     const newScale = Math.max(scale - 0.2, 0.5);
-    trackEvent(AnalyticsEvents.ZOOM_OUT, {
-      scale: newScale
-    });
     setScale(newScale);
   };
 
   const handleResetZoom = () => {
-    trackEvent(AnalyticsEvents.ZOOM_RESET, {
-      previous_scale: scale
-    });
     
     // 计算合适的缩放比例和位置
     if (!containerRef.current || !contentRef.current) {
@@ -386,7 +375,7 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
             strokeWidth: 2
           };
 
-        case 'circle':
+        case 'circle': {
           const radius = Math.sqrt((x - drawStart.x) ** 2 + (y - drawStart.y) ** 2);
           return {
             id: baseId,
@@ -398,6 +387,7 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
             opacity: 0.8,
             strokeWidth: 2
           };
+        }
 
         default:
           return null;
@@ -406,10 +396,6 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
 
     if (newAnnotation) {
       // 追踪标注创建
-      trackEvent(AnalyticsEvents.ANNOTATION_CREATE, {
-        annotation_type: newAnnotation.type,
-        total_annotations: annotations.length + 1
-      });
       
       setAnnotations(prev => [...prev, newAnnotation]);
       // 创建标注后自动切换到选择模式
@@ -460,10 +446,6 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
     const annotation = annotations.find(a => a.id === id);
     if (annotation) {
       // 追踪标注更新
-      trackEvent(AnalyticsEvents.ANNOTATION_UPDATE, {
-        annotation_type: annotation.type,
-        update_fields: Object.keys(updates).join(',')
-      });
     }
     
     setAnnotations(prev => prev.map(a => a.id === id ? { ...a, ...updates } as Annotation : a));
@@ -474,10 +456,6 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
     const annotation = annotations.find(a => a.id === id);
     if (annotation) {
       // 追踪标注删除
-      trackEvent(AnalyticsEvents.ANNOTATION_DELETE, {
-        annotation_type: annotation.type,
-        total_annotations: annotations.length - 1
-      });
     }
     
     setAnnotations(prev => prev.filter(a => a.id !== id));
@@ -547,11 +525,6 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
     }
     
     // 追踪标注复制
-    trackEvent(AnalyticsEvents.ANNOTATION_CREATE, {
-      annotation_type: newAnnotation.type,
-      total_annotations: annotations.length + 1,
-      is_copy: true
-    });
     
     setAnnotations(prev => [...prev, newAnnotation]);
     // 自动选中新复制的标注
@@ -950,12 +923,6 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
         ]);
 
         // 追踪复制成功
-        trackEvent('copy_image_success', {
-          transparent: transparent,
-          width: targetWidth,
-          height: targetHeight,
-          has_annotations: annotations.length > 0
-        });
 
         // 显示成功提示
         setCopying(false);
@@ -968,10 +935,6 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
       } catch (err) {
         console.error('Copy failed', err);
 
-        trackEvent('copy_image_fail', {
-          transparent: transparent,
-          error: (err as Error).message
-        });
 
         setCopying(false);
         setError('复制失败: ' + (err as Error).message);
@@ -1150,13 +1113,6 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
         link.click();
         
         // 追踪导出成功
-        trackEvent(AnalyticsEvents.EXPORT_SUCCESS, {
-          format: transparent ? 'png' : 'jpg',
-          transparent: transparent,
-          width: targetWidth,
-          height: targetHeight,
-          has_annotations: annotations.length > 0
-        });
         
         // 短暂延迟后关闭Loading，让用户看到成功反馈
         setTimeout(() => {
@@ -1166,10 +1122,6 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
         console.error('Export failed', err);
         
         // 追踪导出失败
-        trackEvent(AnalyticsEvents.EXPORT_FAIL, {
-          format: transparent ? 'png' : 'jpg',
-          error: (err as Error).message
-        });
         
         setExporting(false);
         alert('导出失败，请查看控制台了解详情。\n错误: ' + (err as Error).message);

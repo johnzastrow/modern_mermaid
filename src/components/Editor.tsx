@@ -44,7 +44,7 @@ const Editor: React.FC<EditorProps> = ({ code, onChange }) => {
           key += 100; // 跳过一些键值以避免冲突
         }
         parts.push(
-          <span key={`${lineIndex}-${key++}`} className="text-gray-400 dark:text-gray-500 italic">
+          <span key={`${lineIndex}-${key}`} className="text-gray-400 dark:text-gray-500 italic">
             {commentMatch[0]}
           </span>
         );
@@ -68,7 +68,7 @@ const Editor: React.FC<EditorProps> = ({ code, onChange }) => {
     const patterns = [
       // 字符串（方括号、圆括号、花括号、引号内的内容）- 先匹配以避免内部关键字被高亮
       { 
-        regex: /(\[([^\[\]]*)\]|\(([^()]*)\)|\{([^{}]*)\}|"([^"]*)"|'([^']*)')/g,
+        regex: /(\[([^[\]]*)\]|\(([^()]*)\)|\{([^{}]*)\}|"([^"]*)"|'([^']*)')/g,
         className: 'text-orange-600 dark:text-orange-400'
       },
       // 图表类型关键字
@@ -161,7 +161,7 @@ const Editor: React.FC<EditorProps> = ({ code, onChange }) => {
     // 添加剩余的普通文本
     if (lastIndex < text.length) {
       const plainText = text.substring(lastIndex);
-      parts.push(<span key={`${lineIndex}-${key++}`}>{plainText}</span>);
+      parts.push(<span key={`${lineIndex}-${key}`}>{plainText}</span>);
     }
     
     return parts;
