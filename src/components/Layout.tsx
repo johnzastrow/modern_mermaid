@@ -15,8 +15,6 @@ import { fonts, type FontOption } from '../utils/fonts';
 import type { AnnotationType } from '../types/annotation';
 import { useLanguage } from '../contexts/LanguageContext';
 import { X, RefreshCw } from 'lucide-react';
-import { trackEvent } from './GoogleAnalytics';
-import { AnalyticsEvents } from '../hooks/useAnalytics';
 import { findExampleById } from '../utils/examples';
 import { generateShareURL, parseShareURL } from '../utils/compression';
 
@@ -47,13 +45,6 @@ const Layout: React.FC = () => {
 
   const handleDownload = (transparent: boolean) => {
     // 追踪导出操作
-    trackEvent(AnalyticsEvents.EXPORT_IMAGE, {
-      format: transparent ? 'png' : 'jpg',
-      transparent: transparent,
-      theme: currentTheme,
-      has_annotations: annotationCount > 0,
-      annotation_count: annotationCount
-    });
     
     if (previewRef.current) {
       previewRef.current.exportImage(transparent);
@@ -62,12 +53,6 @@ const Layout: React.FC = () => {
 
   const handleCopy = (transparent: boolean) => {
     // 追踪复制操作
-    trackEvent('copy_image', {
-      transparent: transparent,
-      theme: currentTheme,
-      has_annotations: annotationCount > 0,
-      annotation_count: annotationCount
-    });
     
     if (previewRef.current) {
       previewRef.current.copyImage(transparent);
@@ -84,13 +69,6 @@ const Layout: React.FC = () => {
     });
     
     // 追踪分享操作
-    trackEvent('share_link', {
-      theme: currentTheme,
-      background: selectedBackground.id,
-      font: selectedFont.id,
-      code_length: code.length,
-      compressed_url_length: shareURL.length
-    });
     
     // 复制到剪贴板
     navigator.clipboard.writeText(shareURL).then(() => {
@@ -105,11 +83,6 @@ const Layout: React.FC = () => {
 
   const handleBackgroundChange = (bg: BackgroundStyle) => {
     // 追踪背景更改
-    trackEvent(AnalyticsEvents.BACKGROUND_CHANGE, {
-      background_id: bg.id,
-      background_name: bg.name,
-      theme: currentTheme
-    });
     
     setSelectedBackground(bg);
     // 用户手动更改了背景，允许后续主题切换时重置
@@ -118,11 +91,6 @@ const Layout: React.FC = () => {
 
   const handleFontChange = (font: FontOption) => {
     // 追踪字体更改
-    trackEvent(AnalyticsEvents.FONT_CHANGE, {
-      font_id: font.id,
-      font_name: font.name,
-      theme: currentTheme
-    });
     
     setSelectedFont(font);
     // 用户手动更改了字体，允许后续主题切换时重置
@@ -136,10 +104,6 @@ const Layout: React.FC = () => {
 
   const confirmClearEditor = () => {
     // 追踪清空编辑器操作
-    trackEvent(AnalyticsEvents.EDITOR_CLEAR, {
-      theme: currentTheme,
-      code_length: code.length
-    });
     
     setCode('');
     
@@ -156,9 +120,6 @@ const Layout: React.FC = () => {
   // 刷新预览（重新触发预览生成）
   const handleRefreshEditor = () => {
     // 追踪刷新操作
-    trackEvent(AnalyticsEvents.EDITOR_REFRESH, {
-      theme: currentTheme
-    });
     
     if (previewRef.current) {
       previewRef.current.refresh();
@@ -168,11 +129,6 @@ const Layout: React.FC = () => {
   // 标注工具处理
   const handleSelectTool = (tool: AnnotationType | 'select') => {
     // 追踪标注工具选择
-    trackEvent('annotation_tool_select', {
-      tool: tool,
-      previous_tool: selectedTool,
-      theme: currentTheme
-    });
     
     setSelectedTool(tool);
   };
@@ -185,10 +141,6 @@ const Layout: React.FC = () => {
 
   const confirmClearAnnotations = () => {
     // 追踪清空标注操作
-    trackEvent(AnalyticsEvents.ANNOTATION_CLEAR_ALL, {
-      annotation_count: annotationCount,
-      theme: currentTheme
-    });
     
     // 这个会通过 Preview 的 ref 来处理
     if (previewRef.current && 'clearAnnotations' in previewRef.current) {
@@ -209,10 +161,6 @@ const Layout: React.FC = () => {
     const newFullscreenState = !isFullscreen;
     
     // 追踪全屏切换
-    trackEvent(AnalyticsEvents.FULLSCREEN_TOGGLE, {
-      fullscreen: newFullscreenState,
-      theme: currentTheme
-    });
     
     setIsFullscreen(newFullscreenState);
   };
@@ -220,10 +168,6 @@ const Layout: React.FC = () => {
   // 主题更改处理
   const handleThemeChange = (theme: ThemeType) => {
     // 追踪主题更改
-    trackEvent(AnalyticsEvents.THEME_CHANGE, {
-      theme: theme,
-      previous_theme: currentTheme
-    });
     
     setCurrentTheme(theme);
     
@@ -236,11 +180,6 @@ const Layout: React.FC = () => {
   // 示例选择处理
   const handleExampleSelect = (exampleCode: string, exampleId?: string) => {
     // 追踪示例选择
-    trackEvent(AnalyticsEvents.EXAMPLE_SELECT, {
-      code_length: exampleCode.length,
-      theme: currentTheme,
-      example_id: exampleId
-    });
     
     setCode(exampleCode);
     setLoadedFromUrl(true);
@@ -315,10 +254,6 @@ const Layout: React.FC = () => {
           setCurrentTheme(shareParams.theme as ThemeType);
           
           // 追踪从 URL 加载主题
-          trackEvent('theme_loaded_from_url', {
-            theme: shareParams.theme,
-            from_share: !!shareParams.code
-          });
         }
       }
       
@@ -331,12 +266,6 @@ const Layout: React.FC = () => {
         setLoadedFromUrl(true);
         
         // 追踪从分享链接加载
-        trackEvent('shared_link_opened', {
-          theme: shareParams.theme || currentTheme,
-          background: shareParams.background,
-          font: shareParams.font,
-          code_length: shareParams.code.length
-        });
       } else if (shareParams.example) {
         // 加载示例（如果没有代码但有示例 ID）
         const found = findExampleById(shareParams.example);
@@ -346,11 +275,6 @@ const Layout: React.FC = () => {
           setLoadedFromUrl(true);
           
           // 追踪从 URL 加载示例
-          trackEvent('example_loaded_from_url', {
-            example_id: shareParams.example,
-            category: found.category,
-            theme: shareParams.theme || currentTheme
-          });
         }
       }
     } else {
