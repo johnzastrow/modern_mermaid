@@ -9,7 +9,8 @@ import ResizableDivider from './ResizableDivider';
 import ConfirmDialog from './ConfirmDialog';
 import Toast from './Toast';
 import { themes } from '../utils/themes';
-import type { ThemeType } from '../utils/themes';
+import type { ThemeType, ThemeConfig } from '../utils/themes';
+import ThemeEditor from './ThemeEditor';
 import { backgrounds, type BackgroundStyle } from '../utils/backgrounds';
 import { fonts, type FontOption } from '../utils/fonts';
 import type { AnnotationType } from '../types/annotation';
@@ -26,6 +27,8 @@ const Layout: React.FC = () => {
   
   const [code, setCode] = useState<string>(defaultCode);
   const [currentTheme, setCurrentTheme] = useState<ThemeType>('linearLight');
+  const [customTheme, setCustomTheme] = useState<ThemeConfig | null>(null);
+  const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
   const [selectedBackground, setSelectedBackground] = useState<BackgroundStyle>(backgrounds[0]);
   const [selectedFont, setSelectedFont] = useState<FontOption>(fonts[0]);
   const [selectedTool, setSelectedTool] = useState<AnnotationType | 'select' | null>('select');
@@ -167,14 +170,28 @@ const Layout: React.FC = () => {
 
   // 主题更改处理
   const handleThemeChange = (theme: ThemeType) => {
-    // 追踪主题更改
-    
+    // Selecting a preset exits custom-theme editing mode.
+    setCustomTheme(null);
+    setIsEditorOpen(false);
     setCurrentTheme(theme);
     
     // 更新 URL 参数
     const url = new URL(window.location.href);
     url.searchParams.set('theme', theme);
     window.history.pushState({}, '', url.toString());
+  };
+
+  // The active theme is the in-progress custom theme, or the selected preset.
+  const activeThemeConfig = customTheme ?? themes[currentTheme];
+
+  const handleCustomize = () => {
+    // Seed an editable copy from the current preset on first open.
+    setCustomTheme((prev) => prev ?? structuredClone(themes[currentTheme]));
+    setIsEditorOpen(true);
+  };
+
+  const handleResetCustomTheme = () => {
+    setCustomTheme(structuredClone(themes[currentTheme]));
   };
 
   // 示例选择处理
@@ -355,8 +372,10 @@ const Layout: React.FC = () => {
           style={{ width: isFullscreen ? '100%' : `${100 - leftPanelWidth}%` }}
         >
            <div className="absolute top-4 right-4 z-10 flex items-start gap-2">
-              <Toolbar 
-                currentTheme={currentTheme} 
+              <Toolbar
+                currentTheme={currentTheme}
+                activeThemeConfig={activeThemeConfig}
+                onCustomize={handleCustomize}
                 onThemeChange={handleThemeChange}
                 onDownload={handleDownload}
                 onCopy={handleCopy}
@@ -371,10 +390,20 @@ const Layout: React.FC = () => {
                 annotationCount={annotationCount}
               />
            </div>
-           <Preview 
-             ref={previewRef} 
+           {isEditorOpen && customTheme && (
+             <div className="absolute top-4 left-4 z-20 max-h-[calc(100%-2rem)] flex">
+               <ThemeEditor
+                 theme={activeThemeConfig}
+                 onChange={setCustomTheme}
+                 onClose={() => setIsEditorOpen(false)}
+                 onReset={handleResetCustomTheme}
+               />
+             </div>
+           )}
+           <Preview
+             ref={previewRef}
              code={code} 
-             themeConfig={themes[currentTheme]}
+             themeConfig={activeThemeConfig}
              customBackground={selectedBackground}
              customFont={selectedFont}
              onCodeChange={setCode}

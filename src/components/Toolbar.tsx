@@ -1,7 +1,7 @@
 import React from 'react';
-import { Download, Palette, Image, FileImage, MousePointer, ArrowRight, Type, Square, Circle, Minus, Trash2, Copy, Share2, Code } from 'lucide-react';
+import { Download, Palette, Image, FileImage, MousePointer, ArrowRight, Type, Square, Circle, Minus, Trash2, Copy, Share2, Code, SlidersHorizontal } from 'lucide-react';
 import { themes } from '../utils/themes';
-import type { ThemeType } from '../utils/themes';
+import type { ThemeType, ThemeConfig } from '../utils/themes';
 import { useLanguage } from '../contexts/LanguageContext';
 import BackgroundSelector from './BackgroundSelector';
 import FontSelector from './FontSelector';
@@ -12,6 +12,8 @@ import type { AnnotationType } from '../types/annotation';
 
 interface ToolbarProps {
   currentTheme: ThemeType;
+  activeThemeConfig: ThemeConfig;
+  onCustomize: () => void;
   onThemeChange: (theme: ThemeType) => void;
   onDownload: (transparent: boolean) => void;
   onCopy: (transparent: boolean) => void;
@@ -26,9 +28,11 @@ interface ToolbarProps {
   annotationCount: number;
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({ 
-  currentTheme, 
-  onThemeChange, 
+const Toolbar: React.FC<ToolbarProps> = ({
+  currentTheme,
+  activeThemeConfig,
+  onCustomize,
+  onThemeChange,
   onDownload,
   onCopy,
   onShare,
@@ -68,7 +72,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm transition-all cursor-pointer"
         >
           <Palette className="w-4 h-4" />
-          <span>{themes[currentTheme].name}</span>
+          <span>{activeThemeConfig.name}</span>
         </button>
         
         {isThemeOpen && (
@@ -191,6 +195,16 @@ const Toolbar: React.FC<ToolbarProps> = ({
         <span className="hidden sm:inline">{t.exportConfig || 'Config'}</span>
       </button>
 
+      {/* Customize Theme Button */}
+      <button
+        onClick={onCustomize}
+        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm transition-all cursor-pointer"
+        title={t.customize || 'Customize theme (colors, fonts, CSS)'}
+      >
+        <SlidersHorizontal className="w-4 h-4" />
+        <span className="hidden sm:inline">{t.customize || 'Customize'}</span>
+      </button>
+
       {/* Copy Button */}
       <div className="relative">
         <button
@@ -273,8 +287,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <ExportConfig
         isOpen={isExportConfigOpen}
         onClose={() => setIsExportConfigOpen(false)}
-        mermaidConfig={themes[currentTheme].mermaidConfig}
-        themeName={themes[currentTheme].name}
+        mermaidConfig={activeThemeConfig.mermaidConfig}
+        themeName={activeThemeConfig.name}
       />
     </div>
   );
