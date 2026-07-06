@@ -107,6 +107,38 @@ export interface Translation {
   // Dialog
   confirm: string;
   cancel: string;
+
+  // Export config (optional — English fallback is used until translated)
+  exportConfig?: string;
+  exportConfigTitle?: string;
+  exportConfigSubtitle?: string;
+  exportConfigNote?: string;
+  exportInitTitle?: string;
+  exportInitHint?: string;
+  exportFrontmatterTitle?: string;
+  exportFrontmatterHint?: string;
+  copied?: string;
+  close?: string;
+
+  // Theme editor (optional — English fallback is used until translated)
+  customize?: string;
+  themeEditorTitle?: string;
+  themeName?: string;
+  reset?: string;
+  darkMode?: string;
+  advancedCss?: string;
+  themeEditorHint?: string;
+  newTheme?: string;
+  saveTheme?: string;
+  themeSaved?: string;
+  savedThemesLabel?: string;
+  cornerRadius?: string;
+  reloadDiagram?: string;
+  importConfig?: string;
+  importTitle?: string;
+  importHint?: string;
+  importError?: string;
+  loadTheme?: string;
 }
 
 export const translations: Record<Language, Translation> = {
