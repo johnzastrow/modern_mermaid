@@ -119,6 +119,15 @@ export interface Translation {
   exportFrontmatterHint?: string;
   copied?: string;
   close?: string;
+
+  // Theme editor (optional — English fallback is used until translated)
+  customize?: string;
+  themeEditorTitle?: string;
+  themeName?: string;
+  reset?: string;
+  darkMode?: string;
+  advancedCss?: string;
+  themeEditorHint?: string;
 }
 
 export const translations: Record<Language, Translation> = {
