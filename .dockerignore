@@ -1,0 +1,17 @@
+.git
+.github
+node_modules
+dist
+dist-extension
+coverage
+*.log
+.env
+.env.*
+Dockerfile
+.dockerignore
+docker-compose.yml
+docs
+README*.md
+CHANGELOG.md
+CONTRIBUTING.md
+GEMINI.md
