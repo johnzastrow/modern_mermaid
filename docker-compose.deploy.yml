@@ -1,0 +1,19 @@
+# Pull-based deployment: runs the prebuilt image from GHCR (no local build).
+# Usage on a server:  docker compose -f docker-compose.deploy.yml up -d
+services:
+  modern-mermaid:
+    image: ghcr.io/johnzastrow/modern_mermaid:latest
+    container_name: modern-mermaid
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    pull_policy: always
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3

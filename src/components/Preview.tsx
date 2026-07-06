@@ -892,7 +892,7 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
           filter: (node: HTMLElement) => {
             if (node.tagName === 'LINK' && node.getAttribute('rel') === 'stylesheet') {
               const href = node.getAttribute('href');
-              if (href && (href.includes('fonts.googleapis.com') || href.startsWith('http'))) {
+              if (href && /^(https?:)?\/\//i.test(href)) {
                 return false;
               }
             }
@@ -1083,7 +1083,7 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
                // 过滤掉外部样式表以避免 CORS 错误
                if (node.tagName === 'LINK' && node.getAttribute('rel') === 'stylesheet') {
                  const href = node.getAttribute('href');
-                 if (href && (href.includes('fonts.googleapis.com') || href.startsWith('http'))) {
+                 if (href && /^(https?:)?\/\//i.test(href)) {
                    return false;
                  }
                }
