@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Palette, Image, FileImage, MousePointer, ArrowRight, Type, Square, Circle, Minus, Trash2, Copy, Share2, Code, SlidersHorizontal } from 'lucide-react';
+import { Download, Palette, Image, FileImage, MousePointer, ArrowRight, Type, Square, Circle, Minus, Trash2, Copy, Share2, Code, SlidersHorizontal, ClipboardPaste } from 'lucide-react';
 import { themes } from '../utils/themes';
 import type { ThemeType, ThemeConfig } from '../utils/themes';
 import type { SavedThemes } from '../utils/customThemes';
@@ -7,6 +7,8 @@ import { useLanguage } from '../contexts/LanguageContext';
 import BackgroundSelector from './BackgroundSelector';
 import FontSelector from './FontSelector';
 import ExportConfig from './ExportConfig';
+import ImportConfig from './ImportConfig';
+import type { ExportableConfig } from '../utils/configExport';
 import type { BackgroundStyle } from '../utils/backgrounds';
 import type { FontOption } from '../utils/fonts';
 import type { AnnotationType } from '../types/annotation';
@@ -16,6 +18,7 @@ interface ToolbarProps {
   activeThemeConfig: ThemeConfig;
   savedThemes: SavedThemes;
   onCustomize: () => void;
+  onImportTheme: (config: ExportableConfig) => void;
   onSelectSavedTheme: (name: string) => void;
   onDeleteSavedTheme: (name: string) => void;
   onThemeChange: (theme: ThemeType) => void;
@@ -37,6 +40,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   activeThemeConfig,
   savedThemes,
   onCustomize,
+  onImportTheme,
   onSelectSavedTheme,
   onDeleteSavedTheme,
   onThemeChange,
@@ -57,6 +61,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const [isCopyOpen, setIsCopyOpen] = React.useState(false);
   const [isAnnotationOpen, setIsAnnotationOpen] = React.useState(false);
   const [isExportConfigOpen, setIsExportConfigOpen] = React.useState(false);
+  const [isImportOpen, setIsImportOpen] = React.useState(false);
   const { t } = useLanguage();
 
   const annotationTools = [
@@ -238,6 +243,16 @@ const Toolbar: React.FC<ToolbarProps> = ({
         <span className="hidden sm:inline">{t.customize || 'Customize'}</span>
       </button>
 
+      {/* Import Config Button */}
+      <button
+        onClick={() => setIsImportOpen(true)}
+        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm transition-all cursor-pointer"
+        title={t.importConfig || 'Import a theme config'}
+      >
+        <ClipboardPaste className="w-4 h-4" />
+        <span className="hidden sm:inline">{t.importConfig || 'Import'}</span>
+      </button>
+
       {/* Copy Button */}
       <div className="relative">
         <button
@@ -322,6 +337,13 @@ const Toolbar: React.FC<ToolbarProps> = ({
         onClose={() => setIsExportConfigOpen(false)}
         mermaidConfig={activeThemeConfig.mermaidConfig}
         themeName={activeThemeConfig.name}
+      />
+
+      {/* Import Config Modal */}
+      <ImportConfig
+        isOpen={isImportOpen}
+        onClose={() => setIsImportOpen(false)}
+        onImport={(config) => { onImportTheme(config); setIsImportOpen(false); }}
       />
     </div>
   );
