@@ -20,10 +20,20 @@ export function pickExportableConfig(config: MermaidConfig): ExportableConfig {
 
 /**
  * A single-line `%%{init: ...}%%` directive to place at the top of a
- * ```mermaid``` block. Most compatible form across Mermaid versions.
+ * ```mermaid``` block.
+ *
+ * NOTE: `themeCSS` is intentionally omitted. Mermaid's inline init directive
+ * does not reliably apply multi-line `themeCSS`, so including it can break
+ * rendering. This block carries only `theme` + `themeVariables` (colors/fonts)
+ * — the portable part honored by every renderer, including GitHub. Use
+ * {@link buildFrontmatter} when you need the full `themeCSS` styling.
  */
 export function buildInitDirective(config: MermaidConfig): string {
-  return `%%{init: ${JSON.stringify(pickExportableConfig(config))}}%%`;
+  const { theme, themeVariables } = pickExportableConfig(config);
+  const portable: ExportableConfig = {};
+  if (theme) portable.theme = theme;
+  if (themeVariables) portable.themeVariables = themeVariables;
+  return `%%{init: ${JSON.stringify(portable)}}%%`;
 }
 
 /** Quote a scalar so it is valid YAML (colors start with '#', a comment char). */

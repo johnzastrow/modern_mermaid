@@ -34,16 +34,20 @@ const ExportConfig: React.FC<ExportConfigProps> = ({ isOpen, onClose, mermaidCon
 
   const snippets: Snippet[] = [
     {
-      key: 'init',
-      title: t.exportInitTitle || 'Inline directive (%%{init}%%)',
-      hint: t.exportInitHint || 'Paste as the first line of a mermaid block. Most compatible (GitHub, Typora).',
-      value: buildInitDirective(mermaidConfig),
+      key: 'frontmatter',
+      title: t.exportFrontmatterTitle || 'YAML frontmatter — full styling',
+      hint:
+        t.exportFrontmatterHint ||
+        'Place above the diagram. Carries themeCSS, so rich styling renders in Typora and other full renderers (Mermaid 10.5+).',
+      value: buildFrontmatter(mermaidConfig),
     },
     {
-      key: 'frontmatter',
-      title: t.exportFrontmatterTitle || 'YAML frontmatter',
-      hint: t.exportFrontmatterHint || 'Place above the diagram. More readable for large CSS (needs Mermaid 10.5+).',
-      value: buildFrontmatter(mermaidConfig),
+      key: 'init',
+      title: t.exportInitTitle || 'Inline %%{init}%% — colors & fonts',
+      hint:
+        t.exportInitHint ||
+        'First line of a mermaid block. themeVariables only — works everywhere, including GitHub. (Mermaid cannot apply themeCSS inline.)',
+      value: buildInitDirective(mermaidConfig),
     },
   ];
 

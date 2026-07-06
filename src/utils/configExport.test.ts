@@ -23,17 +23,18 @@ describe('pickExportableConfig', () => {
 });
 
 describe('buildInitDirective', () => {
-  it('produces a single-line, valid JSON init directive', () => {
+  it('produces a single-line init directive with theme + themeVariables only', () => {
     const out = buildInitDirective(sample);
     expect(out.startsWith('%%{init: ')).toBe(true);
     expect(out.endsWith('}%%')).toBe(true);
     expect(out).not.toContain('\n');
-    // The inner payload must be parseable JSON that round-trips the config.
     const json = out.slice('%%{init: '.length, -'}%%'.length);
     const parsed = JSON.parse(json);
     expect(parsed.theme).toBe('base');
     expect(parsed.themeVariables.primaryColor).toBe('#ffffff');
-    expect(parsed.themeCSS).toContain('stroke-width');
+    // themeCSS must NOT be inlined — Mermaid can't apply it via init directive.
+    expect('themeCSS' in parsed).toBe(false);
+    expect(out).not.toContain('stroke-width');
   });
 });
 
