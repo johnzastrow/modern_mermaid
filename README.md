@@ -167,6 +167,68 @@ pnpm build:extension
 
 ---
 
+## 🐳 Self-Hosting (Docker)
+
+The app ships as a hardened static site: a multi-stage build served by a
+**non-root** `nginx-unprivileged` container on port **8080**, with a strict
+Content-Security-Policy and security headers. It has no backend and needs no
+configuration.
+
+### Option A — pull the prebuilt image (recommended)
+
+Every push to `main` publishes an image to the GitHub Container Registry, so a
+server just needs to pull and run it:
+
+```bash
+docker run -d --name modern-mermaid -p 8080:8080 --restart unless-stopped \
+  ghcr.io/johnzastrow/modern_mermaid:latest
+```
+
+Or, with Compose (`docker-compose.deploy.yml` is in the repo):
+
+```yaml
+# docker-compose.deploy.yml
+services:
+  modern-mermaid:
+    image: ghcr.io/johnzastrow/modern_mermaid:latest
+    container_name: modern-mermaid
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    pull_policy: always
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+```
+
+```bash
+docker compose -f docker-compose.deploy.yml up -d
+```
+
+Then browse to `http://<host>:8080`. To update: `docker compose -f docker-compose.deploy.yml pull && docker compose -f docker-compose.deploy.yml up -d`.
+
+> The GHCR package inherits the repository's visibility. For a public repo it is
+> pullable without auth; for a private repo run `docker login ghcr.io` first.
+
+### Option B — build from source
+
+`docker-compose.yml` builds the image locally from the `Dockerfile`:
+
+```bash
+docker compose up -d --build
+```
+
+Put it behind your existing reverse proxy (Caddy/Traefik/nginx) for TLS; the
+container serves plain HTTP on 8080 by design.
+
+---
+
 ## 🛠️ Tech Stack
 
 | Technology | Version | Purpose |
