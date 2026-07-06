@@ -14,7 +14,8 @@ export function sanitizeThemeCSS(css: string): string {
     .replace(/@import[^;]*;?/gi, '')
     .replace(/expression\s*\([^)]*\)/gi, '')
     .replace(/url\(\s*['"]?\s*(?:https?:|\/\/)[^)]*\)/gi, 'url()')
-    .replace(/javascript:/gi, '');
+    // Strip every executable/embedding URL scheme, not just javascript:
+    .replace(/(?:javascript|vbscript|data)\s*:/gi, '');
 }
 
 /** Allowlist keys and coerce a parsed object into a safe ExportableConfig. */

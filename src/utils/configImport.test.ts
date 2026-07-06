@@ -46,6 +46,13 @@ describe('security: sanitizeThemeCSS', () => {
     expect(clean).not.toMatch(/expression\s*\(/i);
   });
 
+  it('strips executable/embedding URL schemes', () => {
+    const clean = sanitizeThemeCSS('a{x:javascript:alert(1)} b{y:VBScript:z} c{bg:DATA:text/html,x}');
+    expect(clean).not.toMatch(/javascript:/i);
+    expect(clean).not.toMatch(/vbscript:/i);
+    expect(clean).not.toMatch(/data:/i);
+  });
+
   it('is applied on import', () => {
     const fm = buildFrontmatter({ ...sample, themeCSS: '.n{}\n@import url(https://evil.test/x);' } as MermaidConfig);
     const parsed = parseThemeConfigInput(fm);
