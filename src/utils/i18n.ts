@@ -107,6 +107,18 @@ export interface Translation {
   // Dialog
   confirm: string;
   cancel: string;
+
+  // Export config (optional — English fallback is used until translated)
+  exportConfig?: string;
+  exportConfigTitle?: string;
+  exportConfigSubtitle?: string;
+  exportConfigNote?: string;
+  exportInitTitle?: string;
+  exportInitHint?: string;
+  exportFrontmatterTitle?: string;
+  exportFrontmatterHint?: string;
+  copied?: string;
+  close?: string;
 }
 
 export const translations: Record<Language, Translation> = {

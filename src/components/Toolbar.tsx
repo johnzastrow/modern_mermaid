@@ -1,10 +1,11 @@
 import React from 'react';
-import { Download, Palette, Image, FileImage, MousePointer, ArrowRight, Type, Square, Circle, Minus, Trash2, Copy, Share2 } from 'lucide-react';
+import { Download, Palette, Image, FileImage, MousePointer, ArrowRight, Type, Square, Circle, Minus, Trash2, Copy, Share2, Code } from 'lucide-react';
 import { themes } from '../utils/themes';
 import type { ThemeType } from '../utils/themes';
 import { useLanguage } from '../contexts/LanguageContext';
 import BackgroundSelector from './BackgroundSelector';
 import FontSelector from './FontSelector';
+import ExportConfig from './ExportConfig';
 import type { BackgroundStyle } from '../utils/backgrounds';
 import type { FontOption } from '../utils/fonts';
 import type { AnnotationType } from '../types/annotation';
@@ -44,6 +45,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const [isDownloadOpen, setIsDownloadOpen] = React.useState(false);
   const [isCopyOpen, setIsCopyOpen] = React.useState(false);
   const [isAnnotationOpen, setIsAnnotationOpen] = React.useState(false);
+  const [isExportConfigOpen, setIsExportConfigOpen] = React.useState(false);
   const { t } = useLanguage();
 
   const annotationTools = [
@@ -179,6 +181,16 @@ const Toolbar: React.FC<ToolbarProps> = ({
         <span className="hidden sm:inline">{t.share || '分享'}</span>
       </button>
 
+      {/* Export Config Button */}
+      <button
+        onClick={() => setIsExportConfigOpen(true)}
+        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm transition-all cursor-pointer"
+        title={t.exportConfigTitle || 'Export theme config for Markdown docs'}
+      >
+        <Code className="w-4 h-4" />
+        <span className="hidden sm:inline">{t.exportConfig || 'Config'}</span>
+      </button>
+
       {/* Copy Button */}
       <div className="relative">
         <button
@@ -255,7 +267,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
            </div>
          </>
         )}
-      </div>      
+      </div>
+
+      {/* Export Config Modal */}
+      <ExportConfig
+        isOpen={isExportConfigOpen}
+        onClose={() => setIsExportConfigOpen(false)}
+        mermaidConfig={themes[currentTheme].mermaidConfig}
+        themeName={themes[currentTheme].name}
+      />
     </div>
   );
 };
