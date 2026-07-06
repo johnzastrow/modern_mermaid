@@ -128,6 +128,12 @@ export interface Translation {
   darkMode?: string;
   advancedCss?: string;
   themeEditorHint?: string;
+  newTheme?: string;
+  saveTheme?: string;
+  themeSaved?: string;
+  savedThemesLabel?: string;
+  cornerRadius?: string;
+  reloadDiagram?: string;
 }
 
 export const translations: Record<Language, Translation> = {

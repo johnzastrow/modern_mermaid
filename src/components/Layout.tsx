@@ -11,6 +11,7 @@ import Toast from './Toast';
 import { themes } from '../utils/themes';
 import type { ThemeType, ThemeConfig } from '../utils/themes';
 import ThemeEditor from './ThemeEditor';
+import { loadSavedThemes, persistSavedThemes, makeBlankTheme, type SavedThemes } from '../utils/customThemes';
 import { backgrounds, type BackgroundStyle } from '../utils/backgrounds';
 import { fonts, type FontOption } from '../utils/fonts';
 import type { AnnotationType } from '../types/annotation';
@@ -29,6 +30,7 @@ const Layout: React.FC = () => {
   const [currentTheme, setCurrentTheme] = useState<ThemeType>('linearLight');
   const [customTheme, setCustomTheme] = useState<ThemeConfig | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
+  const [savedThemes, setSavedThemes] = useState<SavedThemes>(() => loadSavedThemes());
   const [selectedBackground, setSelectedBackground] = useState<BackgroundStyle>(backgrounds[0]);
   const [selectedFont, setSelectedFont] = useState<FontOption>(fonts[0]);
   const [selectedTool, setSelectedTool] = useState<AnnotationType | 'select' | null>('select');
@@ -185,13 +187,49 @@ const Layout: React.FC = () => {
   const activeThemeConfig = customTheme ?? themes[currentTheme];
 
   const handleCustomize = () => {
-    // Seed an editable copy from the current preset on first open.
-    setCustomTheme((prev) => prev ?? structuredClone(themes[currentTheme]));
+    // Seed a NEW editable copy from the current preset (stock themes are never
+    // mutated). The "(custom)" suffix makes it clear this is a separate theme.
+    setCustomTheme((prev) => prev ?? {
+      ...structuredClone(themes[currentTheme]),
+      name: `${themes[currentTheme].name} (custom)`,
+    });
     setIsEditorOpen(true);
   };
 
   const handleResetCustomTheme = () => {
-    setCustomTheme(structuredClone(themes[currentTheme]));
+    setCustomTheme({
+      ...structuredClone(themes[currentTheme]),
+      name: `${themes[currentTheme].name} (custom)`,
+    });
+  };
+
+  const handleNewTheme = () => {
+    setCustomTheme(makeBlankTheme());
+    setIsEditorOpen(true);
+  };
+
+  const handleSaveTheme = () => {
+    if (!customTheme) return;
+    const name = customTheme.name?.trim() || 'Untitled theme';
+    const next = { ...savedThemes, [name]: structuredClone({ ...customTheme, name }) };
+    setSavedThemes(next);
+    persistSavedThemes(next);
+    setToastMessage(`${t.themeSaved || 'Theme saved'}: ${name}`);
+    setShowToast(true);
+  };
+
+  const handleSelectSavedTheme = (name: string) => {
+    const saved = savedThemes[name];
+    if (!saved) return;
+    setCustomTheme(structuredClone(saved));
+    setIsEditorOpen(true);
+  };
+
+  const handleDeleteSavedTheme = (name: string) => {
+    const next = { ...savedThemes };
+    delete next[name];
+    setSavedThemes(next);
+    persistSavedThemes(next);
   };
 
   // 示例选择处理
@@ -375,7 +413,10 @@ const Layout: React.FC = () => {
               <Toolbar
                 currentTheme={currentTheme}
                 activeThemeConfig={activeThemeConfig}
+                savedThemes={savedThemes}
                 onCustomize={handleCustomize}
+                onSelectSavedTheme={handleSelectSavedTheme}
+                onDeleteSavedTheme={handleDeleteSavedTheme}
                 onThemeChange={handleThemeChange}
                 onDownload={handleDownload}
                 onCopy={handleCopy}
@@ -391,12 +432,15 @@ const Layout: React.FC = () => {
               />
            </div>
            {isEditorOpen && customTheme && (
-             <div className="absolute top-4 left-4 z-20 max-h-[calc(100%-2rem)] flex">
+             <div className="absolute top-4 left-16 z-30 max-h-[calc(100%-2rem)] flex">
                <ThemeEditor
                  theme={activeThemeConfig}
                  onChange={setCustomTheme}
                  onClose={() => setIsEditorOpen(false)}
                  onReset={handleResetCustomTheme}
+                 onNew={handleNewTheme}
+                 onSave={handleSaveTheme}
+                 onReload={handleRefreshEditor}
                />
              </div>
            )}

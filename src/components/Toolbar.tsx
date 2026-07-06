@@ -2,6 +2,7 @@ import React from 'react';
 import { Download, Palette, Image, FileImage, MousePointer, ArrowRight, Type, Square, Circle, Minus, Trash2, Copy, Share2, Code, SlidersHorizontal } from 'lucide-react';
 import { themes } from '../utils/themes';
 import type { ThemeType, ThemeConfig } from '../utils/themes';
+import type { SavedThemes } from '../utils/customThemes';
 import { useLanguage } from '../contexts/LanguageContext';
 import BackgroundSelector from './BackgroundSelector';
 import FontSelector from './FontSelector';
@@ -13,7 +14,10 @@ import type { AnnotationType } from '../types/annotation';
 interface ToolbarProps {
   currentTheme: ThemeType;
   activeThemeConfig: ThemeConfig;
+  savedThemes: SavedThemes;
   onCustomize: () => void;
+  onSelectSavedTheme: (name: string) => void;
+  onDeleteSavedTheme: (name: string) => void;
   onThemeChange: (theme: ThemeType) => void;
   onDownload: (transparent: boolean) => void;
   onCopy: (transparent: boolean) => void;
@@ -31,7 +35,10 @@ interface ToolbarProps {
 const Toolbar: React.FC<ToolbarProps> = ({
   currentTheme,
   activeThemeConfig,
+  savedThemes,
   onCustomize,
+  onSelectSavedTheme,
+  onDeleteSavedTheme,
   onThemeChange,
   onDownload,
   onCopy,
@@ -95,6 +102,32 @@ const Toolbar: React.FC<ToolbarProps> = ({
                   {themes[themeKey].name}
                 </button>
               ))}
+
+              {Object.keys(savedThemes).length > 0 && (
+                <>
+                  <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+                  <div className="px-4 py-1 text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                    {t.savedThemesLabel || 'Saved'}
+                  </div>
+                  {Object.keys(savedThemes).map((name) => (
+                    <div key={name} className="flex items-center group">
+                      <button
+                        onClick={() => { onSelectSavedTheme(name); setIsThemeOpen(false); }}
+                        className="flex-1 min-w-0 text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer truncate"
+                      >
+                        {name}
+                      </button>
+                      <button
+                        onClick={() => onDeleteSavedTheme(name)}
+                        title={t.close || 'Delete'}
+                        className="px-2 py-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 cursor-pointer flex-shrink-0"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           </>
         )}
