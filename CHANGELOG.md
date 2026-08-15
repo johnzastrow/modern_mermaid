@@ -3,6 +3,35 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-08-15
+
+### Added
+- Examples for all 22 diagram types the app was missing, taking the built-in
+  library from 9 categories / 13 examples to **31 categories / 35 examples**.
+  Mermaid 11.16.1 supports 31 authorable diagram types and every one now has a
+  worked example: `journey`, `mindmap`, `timeline`, `quadrant`, `requirement`,
+  `c4`, `sankey`, `block`, `architecture`, `kanban`, `packet`, `radar`,
+  `treemap`, `venn`, `swimlane`, `wardley`, `cynefin`, `ishikawa`, `info`, and
+  the three railroad grammar flavours (EBNF, ABNF, PEG).
+- `src/utils/examples.test.ts`, which parses every example against the installed
+  mermaid and asserts the catalogue's structural invariants (unique ids, a name
+  and code body in all six languages, a label for every category, and every id
+  resolvable through `findExampleById`). Distinct diagram bodies are parsed once
+  each rather than once per language. This takes the suite from 12 tests to 118.
+
+### Notes
+- New examples are English-only: all six language keys carry the same English
+  text. Existing translated examples are untouched.
+- Bare `railroad-beta` is deliberately absent. Despite shipping a module, it has
+  no authorable syntax of its own -- it is the shared renderer behind the three
+  grammar flavours, and every documented form is rejected by its parser.
+  Railroad diagrams are covered through `railroad-ebnf-beta`,
+  `railroad-abnf-beta`, and `railroad-peg-beta`.
+- Eight of the new types are `-beta` in mermaid 11.16.1 (`packet`, `radar`,
+  `treemap`, `venn`, `swimlane`, `wardley`, `cynefin`, `ishikawa`), as are the
+  railroad flavours and `sankey`, `block`, and `architecture`. Their syntax can
+  change in a future mermaid release; the new test is what will catch it.
+
 ## [0.1.1] - 2026-08-15
 
 ### Security
