@@ -20,6 +20,28 @@ export const exampleCategories = {
   pie: 'pie',
   git: 'git',
   chart: 'chart',
+  journey: 'journey',
+  mindmap: 'mindmap',
+  timeline: 'timeline',
+  quadrant: 'quadrant',
+  requirement: 'requirement',
+  c4: 'c4',
+  sankey: 'sankey',
+  block: 'block',
+  architecture: 'architecture',
+  kanban: 'kanban',
+  packet: 'packet',
+  radar: 'radar',
+  treemap: 'treemap',
+  venn: 'venn',
+  swimlane: 'swimlane',
+  wardley: 'wardley',
+  cynefin: 'cynefin',
+  ishikawa: 'ishikawa',
+  info: 'info',
+  railroadEbnf: 'railroadEbnf',
+  railroadAbnf: 'railroadAbnf',
+  railroadPeg: 'railroadPeg',
 } as const;
 
 export type ExampleCategory = keyof typeof exampleCategories;
@@ -1436,6 +1458,1662 @@ export const examples: Record<ExampleCategory, Example[]> = {
       },
     },
   ],
+  journey: [
+    {
+      id: 'journey-onboarding',
+      name: {
+        'en': 'Developer Onboarding',
+        'zh-CN': 'Developer Onboarding',
+        'zh-TW': 'Developer Onboarding',
+        'ja': 'Developer Onboarding',
+        'es': 'Developer Onboarding',
+        'pt': 'Developer Onboarding',
+      },
+      code: {
+        'en': `journey
+    title Developer Onboarding
+    section Day One
+      Receive laptop: 3: New Hire
+      Set up environment: 2: New Hire, Buddy
+      Read architecture docs: 4: New Hire
+    section First Week
+      Fix a starter bug: 5: New Hire, Buddy
+      Open first pull request: 5: New Hire
+      Ship to production: 4: New Hire, Team`,
+        'zh-CN': `journey
+    title Developer Onboarding
+    section Day One
+      Receive laptop: 3: New Hire
+      Set up environment: 2: New Hire, Buddy
+      Read architecture docs: 4: New Hire
+    section First Week
+      Fix a starter bug: 5: New Hire, Buddy
+      Open first pull request: 5: New Hire
+      Ship to production: 4: New Hire, Team`,
+        'zh-TW': `journey
+    title Developer Onboarding
+    section Day One
+      Receive laptop: 3: New Hire
+      Set up environment: 2: New Hire, Buddy
+      Read architecture docs: 4: New Hire
+    section First Week
+      Fix a starter bug: 5: New Hire, Buddy
+      Open first pull request: 5: New Hire
+      Ship to production: 4: New Hire, Team`,
+        'ja': `journey
+    title Developer Onboarding
+    section Day One
+      Receive laptop: 3: New Hire
+      Set up environment: 2: New Hire, Buddy
+      Read architecture docs: 4: New Hire
+    section First Week
+      Fix a starter bug: 5: New Hire, Buddy
+      Open first pull request: 5: New Hire
+      Ship to production: 4: New Hire, Team`,
+        'es': `journey
+    title Developer Onboarding
+    section Day One
+      Receive laptop: 3: New Hire
+      Set up environment: 2: New Hire, Buddy
+      Read architecture docs: 4: New Hire
+    section First Week
+      Fix a starter bug: 5: New Hire, Buddy
+      Open first pull request: 5: New Hire
+      Ship to production: 4: New Hire, Team`,
+        'pt': `journey
+    title Developer Onboarding
+    section Day One
+      Receive laptop: 3: New Hire
+      Set up environment: 2: New Hire, Buddy
+      Read architecture docs: 4: New Hire
+    section First Week
+      Fix a starter bug: 5: New Hire, Buddy
+      Open first pull request: 5: New Hire
+      Ship to production: 4: New Hire, Team`,
+      },
+    },
+  ],
+  mindmap: [
+    {
+      id: 'mindmap-release',
+      name: {
+        'en': 'Release Plan',
+        'zh-CN': 'Release Plan',
+        'zh-TW': 'Release Plan',
+        'ja': 'Release Plan',
+        'es': 'Release Plan',
+        'pt': 'Release Plan',
+      },
+      code: {
+        'en': `mindmap
+  root((Release Plan))
+    Scope
+      Must have
+      Nice to have
+    Quality
+      Unit tests
+      Load testing
+      Security review
+    Rollout
+      Canary
+      Progressive
+      Full traffic
+    Comms
+      Changelog
+      Status page`,
+        'zh-CN': `mindmap
+  root((Release Plan))
+    Scope
+      Must have
+      Nice to have
+    Quality
+      Unit tests
+      Load testing
+      Security review
+    Rollout
+      Canary
+      Progressive
+      Full traffic
+    Comms
+      Changelog
+      Status page`,
+        'zh-TW': `mindmap
+  root((Release Plan))
+    Scope
+      Must have
+      Nice to have
+    Quality
+      Unit tests
+      Load testing
+      Security review
+    Rollout
+      Canary
+      Progressive
+      Full traffic
+    Comms
+      Changelog
+      Status page`,
+        'ja': `mindmap
+  root((Release Plan))
+    Scope
+      Must have
+      Nice to have
+    Quality
+      Unit tests
+      Load testing
+      Security review
+    Rollout
+      Canary
+      Progressive
+      Full traffic
+    Comms
+      Changelog
+      Status page`,
+        'es': `mindmap
+  root((Release Plan))
+    Scope
+      Must have
+      Nice to have
+    Quality
+      Unit tests
+      Load testing
+      Security review
+    Rollout
+      Canary
+      Progressive
+      Full traffic
+    Comms
+      Changelog
+      Status page`,
+        'pt': `mindmap
+  root((Release Plan))
+    Scope
+      Must have
+      Nice to have
+    Quality
+      Unit tests
+      Load testing
+      Security review
+    Rollout
+      Canary
+      Progressive
+      Full traffic
+    Comms
+      Changelog
+      Status page`,
+      },
+    },
+  ],
+  timeline: [
+    {
+      id: 'timeline-product',
+      name: {
+        'en': 'Product History',
+        'zh-CN': 'Product History',
+        'zh-TW': 'Product History',
+        'ja': 'Product History',
+        'es': 'Product History',
+        'pt': 'Product History',
+      },
+      code: {
+        'en': `timeline
+    title Product History
+    section Foundation
+      2021 : Prototype in a notebook
+           : First internal demo
+      2022 : Public beta
+    section Growth
+      2023 : Self-hosted release
+           : Plugin API
+      2024 : Theme engine
+    section Maturity
+      2025 : Enterprise SSO`,
+        'zh-CN': `timeline
+    title Product History
+    section Foundation
+      2021 : Prototype in a notebook
+           : First internal demo
+      2022 : Public beta
+    section Growth
+      2023 : Self-hosted release
+           : Plugin API
+      2024 : Theme engine
+    section Maturity
+      2025 : Enterprise SSO`,
+        'zh-TW': `timeline
+    title Product History
+    section Foundation
+      2021 : Prototype in a notebook
+           : First internal demo
+      2022 : Public beta
+    section Growth
+      2023 : Self-hosted release
+           : Plugin API
+      2024 : Theme engine
+    section Maturity
+      2025 : Enterprise SSO`,
+        'ja': `timeline
+    title Product History
+    section Foundation
+      2021 : Prototype in a notebook
+           : First internal demo
+      2022 : Public beta
+    section Growth
+      2023 : Self-hosted release
+           : Plugin API
+      2024 : Theme engine
+    section Maturity
+      2025 : Enterprise SSO`,
+        'es': `timeline
+    title Product History
+    section Foundation
+      2021 : Prototype in a notebook
+           : First internal demo
+      2022 : Public beta
+    section Growth
+      2023 : Self-hosted release
+           : Plugin API
+      2024 : Theme engine
+    section Maturity
+      2025 : Enterprise SSO`,
+        'pt': `timeline
+    title Product History
+    section Foundation
+      2021 : Prototype in a notebook
+           : First internal demo
+      2022 : Public beta
+    section Growth
+      2023 : Self-hosted release
+           : Plugin API
+      2024 : Theme engine
+    section Maturity
+      2025 : Enterprise SSO`,
+      },
+    },
+  ],
+  quadrant: [
+    {
+      id: 'quadrant-priority',
+      name: {
+        'en': 'Feature Prioritization',
+        'zh-CN': 'Feature Prioritization',
+        'zh-TW': 'Feature Prioritization',
+        'ja': 'Feature Prioritization',
+        'es': 'Feature Prioritization',
+        'pt': 'Feature Prioritization',
+      },
+      code: {
+        'en': `quadrantChart
+    title Feature Prioritization
+    x-axis Low Effort --> High Effort
+    y-axis Low Impact --> High Impact
+    quadrant-1 Do now
+    quadrant-2 Plan carefully
+    quadrant-3 Skip
+    quadrant-4 Quick wins
+    SVG export: [0.35, 0.82]
+    Theme backup: [0.25, 0.65]
+    Clipboard copy: [0.15, 0.55]
+    Full rewrite: [0.92, 0.45]
+    Legacy migration: [0.78, 0.28]`,
+        'zh-CN': `quadrantChart
+    title Feature Prioritization
+    x-axis Low Effort --> High Effort
+    y-axis Low Impact --> High Impact
+    quadrant-1 Do now
+    quadrant-2 Plan carefully
+    quadrant-3 Skip
+    quadrant-4 Quick wins
+    SVG export: [0.35, 0.82]
+    Theme backup: [0.25, 0.65]
+    Clipboard copy: [0.15, 0.55]
+    Full rewrite: [0.92, 0.45]
+    Legacy migration: [0.78, 0.28]`,
+        'zh-TW': `quadrantChart
+    title Feature Prioritization
+    x-axis Low Effort --> High Effort
+    y-axis Low Impact --> High Impact
+    quadrant-1 Do now
+    quadrant-2 Plan carefully
+    quadrant-3 Skip
+    quadrant-4 Quick wins
+    SVG export: [0.35, 0.82]
+    Theme backup: [0.25, 0.65]
+    Clipboard copy: [0.15, 0.55]
+    Full rewrite: [0.92, 0.45]
+    Legacy migration: [0.78, 0.28]`,
+        'ja': `quadrantChart
+    title Feature Prioritization
+    x-axis Low Effort --> High Effort
+    y-axis Low Impact --> High Impact
+    quadrant-1 Do now
+    quadrant-2 Plan carefully
+    quadrant-3 Skip
+    quadrant-4 Quick wins
+    SVG export: [0.35, 0.82]
+    Theme backup: [0.25, 0.65]
+    Clipboard copy: [0.15, 0.55]
+    Full rewrite: [0.92, 0.45]
+    Legacy migration: [0.78, 0.28]`,
+        'es': `quadrantChart
+    title Feature Prioritization
+    x-axis Low Effort --> High Effort
+    y-axis Low Impact --> High Impact
+    quadrant-1 Do now
+    quadrant-2 Plan carefully
+    quadrant-3 Skip
+    quadrant-4 Quick wins
+    SVG export: [0.35, 0.82]
+    Theme backup: [0.25, 0.65]
+    Clipboard copy: [0.15, 0.55]
+    Full rewrite: [0.92, 0.45]
+    Legacy migration: [0.78, 0.28]`,
+        'pt': `quadrantChart
+    title Feature Prioritization
+    x-axis Low Effort --> High Effort
+    y-axis Low Impact --> High Impact
+    quadrant-1 Do now
+    quadrant-2 Plan carefully
+    quadrant-3 Skip
+    quadrant-4 Quick wins
+    SVG export: [0.35, 0.82]
+    Theme backup: [0.25, 0.65]
+    Clipboard copy: [0.15, 0.55]
+    Full rewrite: [0.92, 0.45]
+    Legacy migration: [0.78, 0.28]`,
+      },
+    },
+  ],
+  requirement: [
+    {
+      id: 'requirement-offline',
+      name: {
+        'en': 'Offline Access Requirement',
+        'zh-CN': 'Offline Access Requirement',
+        'zh-TW': 'Offline Access Requirement',
+        'ja': 'Offline Access Requirement',
+        'es': 'Offline Access Requirement',
+        'pt': 'Offline Access Requirement',
+      },
+      code: {
+        'en': `requirementDiagram
+    requirement offline_access {
+        id: 1
+        text: The editor must render diagrams without a network connection.
+        risk: high
+        verifymethod: test
+    }
+
+    functionalRequirement service_worker {
+        id: 1.1
+        text: A service worker caches the application shell.
+        risk: medium
+        verifymethod: test
+    }
+
+    element pwa_bundle {
+        type: build artifact
+    }
+
+    offline_access - contains -> service_worker
+    pwa_bundle - satisfies -> service_worker`,
+        'zh-CN': `requirementDiagram
+    requirement offline_access {
+        id: 1
+        text: The editor must render diagrams without a network connection.
+        risk: high
+        verifymethod: test
+    }
+
+    functionalRequirement service_worker {
+        id: 1.1
+        text: A service worker caches the application shell.
+        risk: medium
+        verifymethod: test
+    }
+
+    element pwa_bundle {
+        type: build artifact
+    }
+
+    offline_access - contains -> service_worker
+    pwa_bundle - satisfies -> service_worker`,
+        'zh-TW': `requirementDiagram
+    requirement offline_access {
+        id: 1
+        text: The editor must render diagrams without a network connection.
+        risk: high
+        verifymethod: test
+    }
+
+    functionalRequirement service_worker {
+        id: 1.1
+        text: A service worker caches the application shell.
+        risk: medium
+        verifymethod: test
+    }
+
+    element pwa_bundle {
+        type: build artifact
+    }
+
+    offline_access - contains -> service_worker
+    pwa_bundle - satisfies -> service_worker`,
+        'ja': `requirementDiagram
+    requirement offline_access {
+        id: 1
+        text: The editor must render diagrams without a network connection.
+        risk: high
+        verifymethod: test
+    }
+
+    functionalRequirement service_worker {
+        id: 1.1
+        text: A service worker caches the application shell.
+        risk: medium
+        verifymethod: test
+    }
+
+    element pwa_bundle {
+        type: build artifact
+    }
+
+    offline_access - contains -> service_worker
+    pwa_bundle - satisfies -> service_worker`,
+        'es': `requirementDiagram
+    requirement offline_access {
+        id: 1
+        text: The editor must render diagrams without a network connection.
+        risk: high
+        verifymethod: test
+    }
+
+    functionalRequirement service_worker {
+        id: 1.1
+        text: A service worker caches the application shell.
+        risk: medium
+        verifymethod: test
+    }
+
+    element pwa_bundle {
+        type: build artifact
+    }
+
+    offline_access - contains -> service_worker
+    pwa_bundle - satisfies -> service_worker`,
+        'pt': `requirementDiagram
+    requirement offline_access {
+        id: 1
+        text: The editor must render diagrams without a network connection.
+        risk: high
+        verifymethod: test
+    }
+
+    functionalRequirement service_worker {
+        id: 1.1
+        text: A service worker caches the application shell.
+        risk: medium
+        verifymethod: test
+    }
+
+    element pwa_bundle {
+        type: build artifact
+    }
+
+    offline_access - contains -> service_worker
+    pwa_bundle - satisfies -> service_worker`,
+      },
+    },
+  ],
+  c4: [
+    {
+      id: 'c4-context',
+      name: {
+        'en': 'System Context',
+        'zh-CN': 'System Context',
+        'zh-TW': 'System Context',
+        'ja': 'System Context',
+        'es': 'System Context',
+        'pt': 'System Context',
+      },
+      code: {
+        'en': `C4Context
+    title System Context: Self-Hosted Diagram Editor
+
+    Person(author, "Technical Writer", "Writes documentation")
+    System(editor, "Diagram Editor", "Renders and themes diagrams in the browser")
+    System_Ext(docs, "Docs Repository", "Stores Markdown with embedded diagrams")
+    System_Ext(ci, "CI Pipeline", "Builds and publishes the container image")
+
+    Rel(author, editor, "Authors and themes diagrams")
+    Rel(author, docs, "Commits Markdown")
+    Rel(ci, editor, "Publishes image")
+    Rel(docs, editor, "Diagram source pasted into")`,
+        'zh-CN': `C4Context
+    title System Context: Self-Hosted Diagram Editor
+
+    Person(author, "Technical Writer", "Writes documentation")
+    System(editor, "Diagram Editor", "Renders and themes diagrams in the browser")
+    System_Ext(docs, "Docs Repository", "Stores Markdown with embedded diagrams")
+    System_Ext(ci, "CI Pipeline", "Builds and publishes the container image")
+
+    Rel(author, editor, "Authors and themes diagrams")
+    Rel(author, docs, "Commits Markdown")
+    Rel(ci, editor, "Publishes image")
+    Rel(docs, editor, "Diagram source pasted into")`,
+        'zh-TW': `C4Context
+    title System Context: Self-Hosted Diagram Editor
+
+    Person(author, "Technical Writer", "Writes documentation")
+    System(editor, "Diagram Editor", "Renders and themes diagrams in the browser")
+    System_Ext(docs, "Docs Repository", "Stores Markdown with embedded diagrams")
+    System_Ext(ci, "CI Pipeline", "Builds and publishes the container image")
+
+    Rel(author, editor, "Authors and themes diagrams")
+    Rel(author, docs, "Commits Markdown")
+    Rel(ci, editor, "Publishes image")
+    Rel(docs, editor, "Diagram source pasted into")`,
+        'ja': `C4Context
+    title System Context: Self-Hosted Diagram Editor
+
+    Person(author, "Technical Writer", "Writes documentation")
+    System(editor, "Diagram Editor", "Renders and themes diagrams in the browser")
+    System_Ext(docs, "Docs Repository", "Stores Markdown with embedded diagrams")
+    System_Ext(ci, "CI Pipeline", "Builds and publishes the container image")
+
+    Rel(author, editor, "Authors and themes diagrams")
+    Rel(author, docs, "Commits Markdown")
+    Rel(ci, editor, "Publishes image")
+    Rel(docs, editor, "Diagram source pasted into")`,
+        'es': `C4Context
+    title System Context: Self-Hosted Diagram Editor
+
+    Person(author, "Technical Writer", "Writes documentation")
+    System(editor, "Diagram Editor", "Renders and themes diagrams in the browser")
+    System_Ext(docs, "Docs Repository", "Stores Markdown with embedded diagrams")
+    System_Ext(ci, "CI Pipeline", "Builds and publishes the container image")
+
+    Rel(author, editor, "Authors and themes diagrams")
+    Rel(author, docs, "Commits Markdown")
+    Rel(ci, editor, "Publishes image")
+    Rel(docs, editor, "Diagram source pasted into")`,
+        'pt': `C4Context
+    title System Context: Self-Hosted Diagram Editor
+
+    Person(author, "Technical Writer", "Writes documentation")
+    System(editor, "Diagram Editor", "Renders and themes diagrams in the browser")
+    System_Ext(docs, "Docs Repository", "Stores Markdown with embedded diagrams")
+    System_Ext(ci, "CI Pipeline", "Builds and publishes the container image")
+
+    Rel(author, editor, "Authors and themes diagrams")
+    Rel(author, docs, "Commits Markdown")
+    Rel(ci, editor, "Publishes image")
+    Rel(docs, editor, "Diagram source pasted into")`,
+      },
+    },
+  ],
+  sankey: [
+    {
+      id: 'sankey-storage',
+      name: {
+        'en': 'Storage Flow',
+        'zh-CN': 'Storage Flow',
+        'zh-TW': 'Storage Flow',
+        'ja': 'Storage Flow',
+        'es': 'Storage Flow',
+        'pt': 'Storage Flow',
+      },
+      code: {
+        'en': `sankey-beta
+
+Bulk Storage,Photos,1200
+Bulk Storage,Music,400
+Bulk Storage,Household,900
+Photos,Cloud Backup,1200
+Music,Cloud Backup,400
+Household,Cloud Backup,900
+Cloud Backup,Offsite Replica,2500`,
+        'zh-CN': `sankey-beta
+
+Bulk Storage,Photos,1200
+Bulk Storage,Music,400
+Bulk Storage,Household,900
+Photos,Cloud Backup,1200
+Music,Cloud Backup,400
+Household,Cloud Backup,900
+Cloud Backup,Offsite Replica,2500`,
+        'zh-TW': `sankey-beta
+
+Bulk Storage,Photos,1200
+Bulk Storage,Music,400
+Bulk Storage,Household,900
+Photos,Cloud Backup,1200
+Music,Cloud Backup,400
+Household,Cloud Backup,900
+Cloud Backup,Offsite Replica,2500`,
+        'ja': `sankey-beta
+
+Bulk Storage,Photos,1200
+Bulk Storage,Music,400
+Bulk Storage,Household,900
+Photos,Cloud Backup,1200
+Music,Cloud Backup,400
+Household,Cloud Backup,900
+Cloud Backup,Offsite Replica,2500`,
+        'es': `sankey-beta
+
+Bulk Storage,Photos,1200
+Bulk Storage,Music,400
+Bulk Storage,Household,900
+Photos,Cloud Backup,1200
+Music,Cloud Backup,400
+Household,Cloud Backup,900
+Cloud Backup,Offsite Replica,2500`,
+        'pt': `sankey-beta
+
+Bulk Storage,Photos,1200
+Bulk Storage,Music,400
+Bulk Storage,Household,900
+Photos,Cloud Backup,1200
+Music,Cloud Backup,400
+Household,Cloud Backup,900
+Cloud Backup,Offsite Replica,2500`,
+      },
+    },
+  ],
+  block: [
+    {
+      id: 'block-architecture',
+      name: {
+        'en': 'Application Blocks',
+        'zh-CN': 'Application Blocks',
+        'zh-TW': 'Application Blocks',
+        'ja': 'Application Blocks',
+        'es': 'Application Blocks',
+        'pt': 'Application Blocks',
+      },
+      code: {
+        'en': `block-beta
+  columns 3
+  Browser["Browser"]:3
+  space:3
+  block:services:3
+    Editor["Editor"]
+    Renderer["Mermaid Renderer"]
+    Exporter["Export Engine"]
+  end
+  space:3
+  Storage["localStorage"]:3
+  Browser --> Editor
+  Editor --> Renderer
+  Renderer --> Exporter
+  Editor --> Storage`,
+        'zh-CN': `block-beta
+  columns 3
+  Browser["Browser"]:3
+  space:3
+  block:services:3
+    Editor["Editor"]
+    Renderer["Mermaid Renderer"]
+    Exporter["Export Engine"]
+  end
+  space:3
+  Storage["localStorage"]:3
+  Browser --> Editor
+  Editor --> Renderer
+  Renderer --> Exporter
+  Editor --> Storage`,
+        'zh-TW': `block-beta
+  columns 3
+  Browser["Browser"]:3
+  space:3
+  block:services:3
+    Editor["Editor"]
+    Renderer["Mermaid Renderer"]
+    Exporter["Export Engine"]
+  end
+  space:3
+  Storage["localStorage"]:3
+  Browser --> Editor
+  Editor --> Renderer
+  Renderer --> Exporter
+  Editor --> Storage`,
+        'ja': `block-beta
+  columns 3
+  Browser["Browser"]:3
+  space:3
+  block:services:3
+    Editor["Editor"]
+    Renderer["Mermaid Renderer"]
+    Exporter["Export Engine"]
+  end
+  space:3
+  Storage["localStorage"]:3
+  Browser --> Editor
+  Editor --> Renderer
+  Renderer --> Exporter
+  Editor --> Storage`,
+        'es': `block-beta
+  columns 3
+  Browser["Browser"]:3
+  space:3
+  block:services:3
+    Editor["Editor"]
+    Renderer["Mermaid Renderer"]
+    Exporter["Export Engine"]
+  end
+  space:3
+  Storage["localStorage"]:3
+  Browser --> Editor
+  Editor --> Renderer
+  Renderer --> Exporter
+  Editor --> Storage`,
+        'pt': `block-beta
+  columns 3
+  Browser["Browser"]:3
+  space:3
+  block:services:3
+    Editor["Editor"]
+    Renderer["Mermaid Renderer"]
+    Exporter["Export Engine"]
+  end
+  space:3
+  Storage["localStorage"]:3
+  Browser --> Editor
+  Editor --> Renderer
+  Renderer --> Exporter
+  Editor --> Storage`,
+      },
+    },
+  ],
+  architecture: [
+    {
+      id: 'architecture-selfhost',
+      name: {
+        'en': 'Self-Hosted Deployment',
+        'zh-CN': 'Self-Hosted Deployment',
+        'zh-TW': 'Self-Hosted Deployment',
+        'ja': 'Self-Hosted Deployment',
+        'es': 'Self-Hosted Deployment',
+        'pt': 'Self-Hosted Deployment',
+      },
+      code: {
+        'en': `architecture-beta
+    group frontend(cloud)[Browser]
+    group backend(cloud)[Self Hosted]
+
+    service editor(server)[Editor] in frontend
+    service cache(disk)[Local Storage] in frontend
+    service nginx(server)[Nginx] in backend
+    service assets(disk)[Static Assets] in backend
+
+    editor:R -- L:cache
+    editor:B -- T:nginx
+    nginx:R -- L:assets`,
+        'zh-CN': `architecture-beta
+    group frontend(cloud)[Browser]
+    group backend(cloud)[Self Hosted]
+
+    service editor(server)[Editor] in frontend
+    service cache(disk)[Local Storage] in frontend
+    service nginx(server)[Nginx] in backend
+    service assets(disk)[Static Assets] in backend
+
+    editor:R -- L:cache
+    editor:B -- T:nginx
+    nginx:R -- L:assets`,
+        'zh-TW': `architecture-beta
+    group frontend(cloud)[Browser]
+    group backend(cloud)[Self Hosted]
+
+    service editor(server)[Editor] in frontend
+    service cache(disk)[Local Storage] in frontend
+    service nginx(server)[Nginx] in backend
+    service assets(disk)[Static Assets] in backend
+
+    editor:R -- L:cache
+    editor:B -- T:nginx
+    nginx:R -- L:assets`,
+        'ja': `architecture-beta
+    group frontend(cloud)[Browser]
+    group backend(cloud)[Self Hosted]
+
+    service editor(server)[Editor] in frontend
+    service cache(disk)[Local Storage] in frontend
+    service nginx(server)[Nginx] in backend
+    service assets(disk)[Static Assets] in backend
+
+    editor:R -- L:cache
+    editor:B -- T:nginx
+    nginx:R -- L:assets`,
+        'es': `architecture-beta
+    group frontend(cloud)[Browser]
+    group backend(cloud)[Self Hosted]
+
+    service editor(server)[Editor] in frontend
+    service cache(disk)[Local Storage] in frontend
+    service nginx(server)[Nginx] in backend
+    service assets(disk)[Static Assets] in backend
+
+    editor:R -- L:cache
+    editor:B -- T:nginx
+    nginx:R -- L:assets`,
+        'pt': `architecture-beta
+    group frontend(cloud)[Browser]
+    group backend(cloud)[Self Hosted]
+
+    service editor(server)[Editor] in frontend
+    service cache(disk)[Local Storage] in frontend
+    service nginx(server)[Nginx] in backend
+    service assets(disk)[Static Assets] in backend
+
+    editor:R -- L:cache
+    editor:B -- T:nginx
+    nginx:R -- L:assets`,
+      },
+    },
+  ],
+  kanban: [
+    {
+      id: 'kanban-roadmap',
+      name: {
+        'en': 'Roadmap Board',
+        'zh-CN': 'Roadmap Board',
+        'zh-TW': 'Roadmap Board',
+        'ja': 'Roadmap Board',
+        'es': 'Roadmap Board',
+        'pt': 'Roadmap Board',
+      },
+      code: {
+        'en': `kanban
+  Backlog
+    [Add SVG export]
+    [Theme library backup]
+  In Progress
+    [Diagram example coverage]@{ assigned: 'jcz' }
+  Review
+    [Resolve Dependabot alerts]
+  Done
+    [Remove analytics]
+    [Modernize dependencies]`,
+        'zh-CN': `kanban
+  Backlog
+    [Add SVG export]
+    [Theme library backup]
+  In Progress
+    [Diagram example coverage]@{ assigned: 'jcz' }
+  Review
+    [Resolve Dependabot alerts]
+  Done
+    [Remove analytics]
+    [Modernize dependencies]`,
+        'zh-TW': `kanban
+  Backlog
+    [Add SVG export]
+    [Theme library backup]
+  In Progress
+    [Diagram example coverage]@{ assigned: 'jcz' }
+  Review
+    [Resolve Dependabot alerts]
+  Done
+    [Remove analytics]
+    [Modernize dependencies]`,
+        'ja': `kanban
+  Backlog
+    [Add SVG export]
+    [Theme library backup]
+  In Progress
+    [Diagram example coverage]@{ assigned: 'jcz' }
+  Review
+    [Resolve Dependabot alerts]
+  Done
+    [Remove analytics]
+    [Modernize dependencies]`,
+        'es': `kanban
+  Backlog
+    [Add SVG export]
+    [Theme library backup]
+  In Progress
+    [Diagram example coverage]@{ assigned: 'jcz' }
+  Review
+    [Resolve Dependabot alerts]
+  Done
+    [Remove analytics]
+    [Modernize dependencies]`,
+        'pt': `kanban
+  Backlog
+    [Add SVG export]
+    [Theme library backup]
+  In Progress
+    [Diagram example coverage]@{ assigned: 'jcz' }
+  Review
+    [Resolve Dependabot alerts]
+  Done
+    [Remove analytics]
+    [Modernize dependencies]`,
+      },
+    },
+  ],
+  packet: [
+    {
+      id: 'packet-tcp',
+      name: {
+        'en': 'TCP Header',
+        'zh-CN': 'TCP Header',
+        'zh-TW': 'TCP Header',
+        'ja': 'TCP Header',
+        'es': 'TCP Header',
+        'pt': 'TCP Header',
+      },
+      code: {
+        'en': `packet-beta
+title TCP Header
+0-15: "Source Port"
+16-31: "Destination Port"
+32-63: "Sequence Number"
+64-95: "Acknowledgment Number"
+96-99: "Data Offset"
+100-105: "Reserved"
+106-111: "Flags"
+112-127: "Window Size"
+128-143: "Checksum"
+144-159: "Urgent Pointer"`,
+        'zh-CN': `packet-beta
+title TCP Header
+0-15: "Source Port"
+16-31: "Destination Port"
+32-63: "Sequence Number"
+64-95: "Acknowledgment Number"
+96-99: "Data Offset"
+100-105: "Reserved"
+106-111: "Flags"
+112-127: "Window Size"
+128-143: "Checksum"
+144-159: "Urgent Pointer"`,
+        'zh-TW': `packet-beta
+title TCP Header
+0-15: "Source Port"
+16-31: "Destination Port"
+32-63: "Sequence Number"
+64-95: "Acknowledgment Number"
+96-99: "Data Offset"
+100-105: "Reserved"
+106-111: "Flags"
+112-127: "Window Size"
+128-143: "Checksum"
+144-159: "Urgent Pointer"`,
+        'ja': `packet-beta
+title TCP Header
+0-15: "Source Port"
+16-31: "Destination Port"
+32-63: "Sequence Number"
+64-95: "Acknowledgment Number"
+96-99: "Data Offset"
+100-105: "Reserved"
+106-111: "Flags"
+112-127: "Window Size"
+128-143: "Checksum"
+144-159: "Urgent Pointer"`,
+        'es': `packet-beta
+title TCP Header
+0-15: "Source Port"
+16-31: "Destination Port"
+32-63: "Sequence Number"
+64-95: "Acknowledgment Number"
+96-99: "Data Offset"
+100-105: "Reserved"
+106-111: "Flags"
+112-127: "Window Size"
+128-143: "Checksum"
+144-159: "Urgent Pointer"`,
+        'pt': `packet-beta
+title TCP Header
+0-15: "Source Port"
+16-31: "Destination Port"
+32-63: "Sequence Number"
+64-95: "Acknowledgment Number"
+96-99: "Data Offset"
+100-105: "Reserved"
+106-111: "Flags"
+112-127: "Window Size"
+128-143: "Checksum"
+144-159: "Urgent Pointer"`,
+      },
+    },
+  ],
+  radar: [
+    {
+      id: 'radar-storage',
+      name: {
+        'en': 'Storage Backend Comparison',
+        'zh-CN': 'Storage Backend Comparison',
+        'zh-TW': 'Storage Backend Comparison',
+        'ja': 'Storage Backend Comparison',
+        'es': 'Storage Backend Comparison',
+        'pt': 'Storage Backend Comparison',
+      },
+      code: {
+        'en': `radar-beta
+  title Storage Backend Comparison
+  axis cost["Cost"], speed["Speed"], flex["Flexibility"]
+  axis recover["Recoverability"], simple["Simplicity"]
+
+  curve zfs["ZFS"]{3, 5, 2, 5, 2}
+  curve mergerfs["mergerfs + SnapRAID"]{5, 3, 5, 4, 4}
+
+  max 5
+  min 0`,
+        'zh-CN': `radar-beta
+  title Storage Backend Comparison
+  axis cost["Cost"], speed["Speed"], flex["Flexibility"]
+  axis recover["Recoverability"], simple["Simplicity"]
+
+  curve zfs["ZFS"]{3, 5, 2, 5, 2}
+  curve mergerfs["mergerfs + SnapRAID"]{5, 3, 5, 4, 4}
+
+  max 5
+  min 0`,
+        'zh-TW': `radar-beta
+  title Storage Backend Comparison
+  axis cost["Cost"], speed["Speed"], flex["Flexibility"]
+  axis recover["Recoverability"], simple["Simplicity"]
+
+  curve zfs["ZFS"]{3, 5, 2, 5, 2}
+  curve mergerfs["mergerfs + SnapRAID"]{5, 3, 5, 4, 4}
+
+  max 5
+  min 0`,
+        'ja': `radar-beta
+  title Storage Backend Comparison
+  axis cost["Cost"], speed["Speed"], flex["Flexibility"]
+  axis recover["Recoverability"], simple["Simplicity"]
+
+  curve zfs["ZFS"]{3, 5, 2, 5, 2}
+  curve mergerfs["mergerfs + SnapRAID"]{5, 3, 5, 4, 4}
+
+  max 5
+  min 0`,
+        'es': `radar-beta
+  title Storage Backend Comparison
+  axis cost["Cost"], speed["Speed"], flex["Flexibility"]
+  axis recover["Recoverability"], simple["Simplicity"]
+
+  curve zfs["ZFS"]{3, 5, 2, 5, 2}
+  curve mergerfs["mergerfs + SnapRAID"]{5, 3, 5, 4, 4}
+
+  max 5
+  min 0`,
+        'pt': `radar-beta
+  title Storage Backend Comparison
+  axis cost["Cost"], speed["Speed"], flex["Flexibility"]
+  axis recover["Recoverability"], simple["Simplicity"]
+
+  curve zfs["ZFS"]{3, 5, 2, 5, 2}
+  curve mergerfs["mergerfs + SnapRAID"]{5, 3, 5, 4, 4}
+
+  max 5
+  min 0`,
+      },
+    },
+  ],
+  treemap: [
+    {
+      id: 'treemap-storage',
+      name: {
+        'en': 'Storage Pool Usage',
+        'zh-CN': 'Storage Pool Usage',
+        'zh-TW': 'Storage Pool Usage',
+        'ja': 'Storage Pool Usage',
+        'es': 'Storage Pool Usage',
+        'pt': 'Storage Pool Usage',
+      },
+      code: {
+        'en': `treemap-beta
+"Storage Pool"
+    "Photos"
+        "2024": 420
+        "2025": 380
+    "Music"
+        "Lossless": 260
+        "Compressed": 140
+    "Household"
+        "Documents": 90
+        "Video": 610`,
+        'zh-CN': `treemap-beta
+"Storage Pool"
+    "Photos"
+        "2024": 420
+        "2025": 380
+    "Music"
+        "Lossless": 260
+        "Compressed": 140
+    "Household"
+        "Documents": 90
+        "Video": 610`,
+        'zh-TW': `treemap-beta
+"Storage Pool"
+    "Photos"
+        "2024": 420
+        "2025": 380
+    "Music"
+        "Lossless": 260
+        "Compressed": 140
+    "Household"
+        "Documents": 90
+        "Video": 610`,
+        'ja': `treemap-beta
+"Storage Pool"
+    "Photos"
+        "2024": 420
+        "2025": 380
+    "Music"
+        "Lossless": 260
+        "Compressed": 140
+    "Household"
+        "Documents": 90
+        "Video": 610`,
+        'es': `treemap-beta
+"Storage Pool"
+    "Photos"
+        "2024": 420
+        "2025": 380
+    "Music"
+        "Lossless": 260
+        "Compressed": 140
+    "Household"
+        "Documents": 90
+        "Video": 610`,
+        'pt': `treemap-beta
+"Storage Pool"
+    "Photos"
+        "2024": 420
+        "2025": 380
+    "Music"
+        "Lossless": 260
+        "Compressed": 140
+    "Household"
+        "Documents": 90
+        "Video": 610`,
+      },
+    },
+  ],
+  venn: [
+    {
+      id: 'venn-tools',
+      name: {
+        'en': 'Diagram Tool Capabilities',
+        'zh-CN': 'Diagram Tool Capabilities',
+        'zh-TW': 'Diagram Tool Capabilities',
+        'ja': 'Diagram Tool Capabilities',
+        'es': 'Diagram Tool Capabilities',
+        'pt': 'Diagram Tool Capabilities',
+      },
+      code: {
+        'en': `venn-beta
+    title Diagram Tool Capabilities
+    set Mermaid: 30
+    set Graphviz: 22
+    set Excalidraw: 18
+    set MermaidGraphviz: 9
+    set MermaidExcalidraw: 6
+    set GraphvizExcalidraw: 4
+    set MermaidGraphvizExcalidraw: 2`,
+        'zh-CN': `venn-beta
+    title Diagram Tool Capabilities
+    set Mermaid: 30
+    set Graphviz: 22
+    set Excalidraw: 18
+    set MermaidGraphviz: 9
+    set MermaidExcalidraw: 6
+    set GraphvizExcalidraw: 4
+    set MermaidGraphvizExcalidraw: 2`,
+        'zh-TW': `venn-beta
+    title Diagram Tool Capabilities
+    set Mermaid: 30
+    set Graphviz: 22
+    set Excalidraw: 18
+    set MermaidGraphviz: 9
+    set MermaidExcalidraw: 6
+    set GraphvizExcalidraw: 4
+    set MermaidGraphvizExcalidraw: 2`,
+        'ja': `venn-beta
+    title Diagram Tool Capabilities
+    set Mermaid: 30
+    set Graphviz: 22
+    set Excalidraw: 18
+    set MermaidGraphviz: 9
+    set MermaidExcalidraw: 6
+    set GraphvizExcalidraw: 4
+    set MermaidGraphvizExcalidraw: 2`,
+        'es': `venn-beta
+    title Diagram Tool Capabilities
+    set Mermaid: 30
+    set Graphviz: 22
+    set Excalidraw: 18
+    set MermaidGraphviz: 9
+    set MermaidExcalidraw: 6
+    set GraphvizExcalidraw: 4
+    set MermaidGraphvizExcalidraw: 2`,
+        'pt': `venn-beta
+    title Diagram Tool Capabilities
+    set Mermaid: 30
+    set Graphviz: 22
+    set Excalidraw: 18
+    set MermaidGraphviz: 9
+    set MermaidExcalidraw: 6
+    set GraphvizExcalidraw: 4
+    set MermaidGraphvizExcalidraw: 2`,
+      },
+    },
+  ],
+  swimlane: [
+    {
+      id: 'swimlane-pipeline',
+      name: {
+        'en': 'Render Pipeline',
+        'zh-CN': 'Render Pipeline',
+        'zh-TW': 'Render Pipeline',
+        'ja': 'Render Pipeline',
+        'es': 'Render Pipeline',
+        'pt': 'Render Pipeline',
+      },
+      code: {
+        'en': `swimlane-beta
+    Author --> Editor
+    Editor --> Renderer
+    Renderer --> Preview
+    Preview --> Export`,
+        'zh-CN': `swimlane-beta
+    Author --> Editor
+    Editor --> Renderer
+    Renderer --> Preview
+    Preview --> Export`,
+        'zh-TW': `swimlane-beta
+    Author --> Editor
+    Editor --> Renderer
+    Renderer --> Preview
+    Preview --> Export`,
+        'ja': `swimlane-beta
+    Author --> Editor
+    Editor --> Renderer
+    Renderer --> Preview
+    Preview --> Export`,
+        'es': `swimlane-beta
+    Author --> Editor
+    Editor --> Renderer
+    Renderer --> Preview
+    Preview --> Export`,
+        'pt': `swimlane-beta
+    Author --> Editor
+    Editor --> Renderer
+    Renderer --> Preview
+    Preview --> Export`,
+      },
+    },
+  ],
+  wardley: [
+    {
+      id: 'wardley-editing',
+      name: {
+        'en': 'Diagram Editing Value Chain',
+        'zh-CN': 'Diagram Editing Value Chain',
+        'zh-TW': 'Diagram Editing Value Chain',
+        'ja': 'Diagram Editing Value Chain',
+        'es': 'Diagram Editing Value Chain',
+        'pt': 'Diagram Editing Value Chain',
+      },
+      code: {
+        'en': `wardley-beta
+  title Diagram Editing Value Chain
+  anchor Writer [0.95, 0.62]
+  component Diagram [0.80, 0.55]
+  component Renderer [0.62, 0.72]
+  component Browser [0.40, 0.92]
+  Writer -> Diagram
+  Diagram -> Renderer
+  Renderer -> Browser`,
+        'zh-CN': `wardley-beta
+  title Diagram Editing Value Chain
+  anchor Writer [0.95, 0.62]
+  component Diagram [0.80, 0.55]
+  component Renderer [0.62, 0.72]
+  component Browser [0.40, 0.92]
+  Writer -> Diagram
+  Diagram -> Renderer
+  Renderer -> Browser`,
+        'zh-TW': `wardley-beta
+  title Diagram Editing Value Chain
+  anchor Writer [0.95, 0.62]
+  component Diagram [0.80, 0.55]
+  component Renderer [0.62, 0.72]
+  component Browser [0.40, 0.92]
+  Writer -> Diagram
+  Diagram -> Renderer
+  Renderer -> Browser`,
+        'ja': `wardley-beta
+  title Diagram Editing Value Chain
+  anchor Writer [0.95, 0.62]
+  component Diagram [0.80, 0.55]
+  component Renderer [0.62, 0.72]
+  component Browser [0.40, 0.92]
+  Writer -> Diagram
+  Diagram -> Renderer
+  Renderer -> Browser`,
+        'es': `wardley-beta
+  title Diagram Editing Value Chain
+  anchor Writer [0.95, 0.62]
+  component Diagram [0.80, 0.55]
+  component Renderer [0.62, 0.72]
+  component Browser [0.40, 0.92]
+  Writer -> Diagram
+  Diagram -> Renderer
+  Renderer -> Browser`,
+        'pt': `wardley-beta
+  title Diagram Editing Value Chain
+  anchor Writer [0.95, 0.62]
+  component Diagram [0.80, 0.55]
+  component Renderer [0.62, 0.72]
+  component Browser [0.40, 0.92]
+  Writer -> Diagram
+  Diagram -> Renderer
+  Renderer -> Browser`,
+      },
+    },
+  ],
+  cynefin: [
+    {
+      id: 'cynefin-incident',
+      name: {
+        'en': 'Incident Response Domains',
+        'zh-CN': 'Incident Response Domains',
+        'zh-TW': 'Incident Response Domains',
+        'ja': 'Incident Response Domains',
+        'es': 'Incident Response Domains',
+        'pt': 'Incident Response Domains',
+      },
+      code: {
+        'en': `cynefin-beta
+  title Incident Response Domains
+  clear "Restart the stuck service"
+  complicated "Tune the slow query planner"
+  complex "Intermittent data corruption"
+  chaotic "Total production outage"`,
+        'zh-CN': `cynefin-beta
+  title Incident Response Domains
+  clear "Restart the stuck service"
+  complicated "Tune the slow query planner"
+  complex "Intermittent data corruption"
+  chaotic "Total production outage"`,
+        'zh-TW': `cynefin-beta
+  title Incident Response Domains
+  clear "Restart the stuck service"
+  complicated "Tune the slow query planner"
+  complex "Intermittent data corruption"
+  chaotic "Total production outage"`,
+        'ja': `cynefin-beta
+  title Incident Response Domains
+  clear "Restart the stuck service"
+  complicated "Tune the slow query planner"
+  complex "Intermittent data corruption"
+  chaotic "Total production outage"`,
+        'es': `cynefin-beta
+  title Incident Response Domains
+  clear "Restart the stuck service"
+  complicated "Tune the slow query planner"
+  complex "Intermittent data corruption"
+  chaotic "Total production outage"`,
+        'pt': `cynefin-beta
+  title Incident Response Domains
+  clear "Restart the stuck service"
+  complicated "Tune the slow query planner"
+  complex "Intermittent data corruption"
+  chaotic "Total production outage"`,
+      },
+    },
+  ],
+  ishikawa: [
+    {
+      id: 'ishikawa-build',
+      name: {
+        'en': 'Why Did the Build Break?',
+        'zh-CN': 'Why Did the Build Break?',
+        'zh-TW': 'Why Did the Build Break?',
+        'ja': 'Why Did the Build Break?',
+        'es': 'Why Did the Build Break?',
+        'pt': 'Why Did the Build Break?',
+      },
+      code: {
+        'en': `ishikawa-beta
+  title Why did the build break?
+  cause People
+    sub Review skipped
+    sub Onboarding gap
+  cause Process
+    sub No lockfile check
+    sub Missing CI gate
+  cause Tooling
+    sub Stale dependency cache`,
+        'zh-CN': `ishikawa-beta
+  title Why did the build break?
+  cause People
+    sub Review skipped
+    sub Onboarding gap
+  cause Process
+    sub No lockfile check
+    sub Missing CI gate
+  cause Tooling
+    sub Stale dependency cache`,
+        'zh-TW': `ishikawa-beta
+  title Why did the build break?
+  cause People
+    sub Review skipped
+    sub Onboarding gap
+  cause Process
+    sub No lockfile check
+    sub Missing CI gate
+  cause Tooling
+    sub Stale dependency cache`,
+        'ja': `ishikawa-beta
+  title Why did the build break?
+  cause People
+    sub Review skipped
+    sub Onboarding gap
+  cause Process
+    sub No lockfile check
+    sub Missing CI gate
+  cause Tooling
+    sub Stale dependency cache`,
+        'es': `ishikawa-beta
+  title Why did the build break?
+  cause People
+    sub Review skipped
+    sub Onboarding gap
+  cause Process
+    sub No lockfile check
+    sub Missing CI gate
+  cause Tooling
+    sub Stale dependency cache`,
+        'pt': `ishikawa-beta
+  title Why did the build break?
+  cause People
+    sub Review skipped
+    sub Onboarding gap
+  cause Process
+    sub No lockfile check
+    sub Missing CI gate
+  cause Tooling
+    sub Stale dependency cache`,
+      },
+    },
+  ],
+  info: [
+    {
+      id: 'info-version',
+      name: {
+        'en': 'Mermaid Version Info',
+        'zh-CN': 'Mermaid Version Info',
+        'zh-TW': 'Mermaid Version Info',
+        'ja': 'Mermaid Version Info',
+        'es': 'Mermaid Version Info',
+        'pt': 'Mermaid Version Info',
+      },
+      code: {
+        'en': `info`,
+        'zh-CN': `info`,
+        'zh-TW': `info`,
+        'ja': `info`,
+        'es': `info`,
+        'pt': `info`,
+      },
+    },
+  ],
+  railroadEbnf: [
+    {
+      id: 'railroad-ebnf-grammar',
+      name: {
+        'en': 'Diagram Grammar (EBNF)',
+        'zh-CN': 'Diagram Grammar (EBNF)',
+        'zh-TW': 'Diagram Grammar (EBNF)',
+        'ja': 'Diagram Grammar (EBNF)',
+        'es': 'Diagram Grammar (EBNF)',
+        'pt': 'Diagram Grammar (EBNF)',
+      },
+      code: {
+        'en': `railroad-ebnf-beta
+  diagram = header, body;
+  header = "flowchart", direction;
+  direction = "TD" | "LR" | "BT" | "RL";
+  body = { statement };
+  statement = node, [ link, node ];`,
+        'zh-CN': `railroad-ebnf-beta
+  diagram = header, body;
+  header = "flowchart", direction;
+  direction = "TD" | "LR" | "BT" | "RL";
+  body = { statement };
+  statement = node, [ link, node ];`,
+        'zh-TW': `railroad-ebnf-beta
+  diagram = header, body;
+  header = "flowchart", direction;
+  direction = "TD" | "LR" | "BT" | "RL";
+  body = { statement };
+  statement = node, [ link, node ];`,
+        'ja': `railroad-ebnf-beta
+  diagram = header, body;
+  header = "flowchart", direction;
+  direction = "TD" | "LR" | "BT" | "RL";
+  body = { statement };
+  statement = node, [ link, node ];`,
+        'es': `railroad-ebnf-beta
+  diagram = header, body;
+  header = "flowchart", direction;
+  direction = "TD" | "LR" | "BT" | "RL";
+  body = { statement };
+  statement = node, [ link, node ];`,
+        'pt': `railroad-ebnf-beta
+  diagram = header, body;
+  header = "flowchart", direction;
+  direction = "TD" | "LR" | "BT" | "RL";
+  body = { statement };
+  statement = node, [ link, node ];`,
+      },
+    },
+  ],
+  railroadAbnf: [
+    {
+      id: 'railroad-abnf-greeting',
+      name: {
+        'en': 'Greeting Rule (ABNF)',
+        'zh-CN': 'Greeting Rule (ABNF)',
+        'zh-TW': 'Greeting Rule (ABNF)',
+        'ja': 'Greeting Rule (ABNF)',
+        'es': 'Greeting Rule (ABNF)',
+        'pt': 'Greeting Rule (ABNF)',
+      },
+      code: {
+        'en': `railroad-abnf-beta
+  greeting = salutation SP target;
+  salutation = "hello" / "hi";
+  target = 1*ALPHA;
+  SP = %x20;`,
+        'zh-CN': `railroad-abnf-beta
+  greeting = salutation SP target;
+  salutation = "hello" / "hi";
+  target = 1*ALPHA;
+  SP = %x20;`,
+        'zh-TW': `railroad-abnf-beta
+  greeting = salutation SP target;
+  salutation = "hello" / "hi";
+  target = 1*ALPHA;
+  SP = %x20;`,
+        'ja': `railroad-abnf-beta
+  greeting = salutation SP target;
+  salutation = "hello" / "hi";
+  target = 1*ALPHA;
+  SP = %x20;`,
+        'es': `railroad-abnf-beta
+  greeting = salutation SP target;
+  salutation = "hello" / "hi";
+  target = 1*ALPHA;
+  SP = %x20;`,
+        'pt': `railroad-abnf-beta
+  greeting = salutation SP target;
+  salutation = "hello" / "hi";
+  target = 1*ALPHA;
+  SP = %x20;`,
+      },
+    },
+  ],
+  railroadPeg: [
+    {
+      id: 'railroad-peg-expr',
+      name: {
+        'en': 'Arithmetic Expression (PEG)',
+        'zh-CN': 'Arithmetic Expression (PEG)',
+        'zh-TW': 'Arithmetic Expression (PEG)',
+        'ja': 'Arithmetic Expression (PEG)',
+        'es': 'Arithmetic Expression (PEG)',
+        'pt': 'Arithmetic Expression (PEG)',
+      },
+      code: {
+        'en': `railroad-peg-beta
+  expression <- term (("+" / "-") term)*;
+  term <- factor (("*" / "/") factor)*;
+  factor <- number / "(" expression ")";
+  number <- digit+;
+  digit <- "0" / "1" / "2" / "3" / "4";`,
+        'zh-CN': `railroad-peg-beta
+  expression <- term (("+" / "-") term)*;
+  term <- factor (("*" / "/") factor)*;
+  factor <- number / "(" expression ")";
+  number <- digit+;
+  digit <- "0" / "1" / "2" / "3" / "4";`,
+        'zh-TW': `railroad-peg-beta
+  expression <- term (("+" / "-") term)*;
+  term <- factor (("*" / "/") factor)*;
+  factor <- number / "(" expression ")";
+  number <- digit+;
+  digit <- "0" / "1" / "2" / "3" / "4";`,
+        'ja': `railroad-peg-beta
+  expression <- term (("+" / "-") term)*;
+  term <- factor (("*" / "/") factor)*;
+  factor <- number / "(" expression ")";
+  number <- digit+;
+  digit <- "0" / "1" / "2" / "3" / "4";`,
+        'es': `railroad-peg-beta
+  expression <- term (("+" / "-") term)*;
+  term <- factor (("*" / "/") factor)*;
+  factor <- number / "(" expression ")";
+  number <- digit+;
+  digit <- "0" / "1" / "2" / "3" / "4";`,
+        'pt': `railroad-peg-beta
+  expression <- term (("+" / "-") term)*;
+  term <- factor (("*" / "/") factor)*;
+  factor <- number / "(" expression ")";
+  number <- digit+;
+  digit <- "0" / "1" / "2" / "3" / "4";`,
+      },
+    },
+  ],
 };
 
 export const getCategoryName = (category: ExampleCategory, lang: Language): string => {
@@ -1511,6 +3189,182 @@ export const getCategoryName = (category: ExampleCategory, lang: Language): stri
       'ja': '折れ線・棒グラフ',
       'es': 'Gráficos de Líneas y Barras',
       'pt': 'Gráficos de Linhas e Barras',
+    },
+    journey: {
+      'en': 'User Journey',
+      'zh-CN': 'User Journey',
+      'zh-TW': 'User Journey',
+      'ja': 'User Journey',
+      'es': 'User Journey',
+      'pt': 'User Journey',
+    },
+    mindmap: {
+      'en': 'Mind Map',
+      'zh-CN': 'Mind Map',
+      'zh-TW': 'Mind Map',
+      'ja': 'Mind Map',
+      'es': 'Mind Map',
+      'pt': 'Mind Map',
+    },
+    timeline: {
+      'en': 'Timeline',
+      'zh-CN': 'Timeline',
+      'zh-TW': 'Timeline',
+      'ja': 'Timeline',
+      'es': 'Timeline',
+      'pt': 'Timeline',
+    },
+    quadrant: {
+      'en': 'Quadrant Chart',
+      'zh-CN': 'Quadrant Chart',
+      'zh-TW': 'Quadrant Chart',
+      'ja': 'Quadrant Chart',
+      'es': 'Quadrant Chart',
+      'pt': 'Quadrant Chart',
+    },
+    requirement: {
+      'en': 'Requirement Diagram',
+      'zh-CN': 'Requirement Diagram',
+      'zh-TW': 'Requirement Diagram',
+      'ja': 'Requirement Diagram',
+      'es': 'Requirement Diagram',
+      'pt': 'Requirement Diagram',
+    },
+    c4: {
+      'en': 'C4 Context',
+      'zh-CN': 'C4 Context',
+      'zh-TW': 'C4 Context',
+      'ja': 'C4 Context',
+      'es': 'C4 Context',
+      'pt': 'C4 Context',
+    },
+    sankey: {
+      'en': 'Sankey Diagram',
+      'zh-CN': 'Sankey Diagram',
+      'zh-TW': 'Sankey Diagram',
+      'ja': 'Sankey Diagram',
+      'es': 'Sankey Diagram',
+      'pt': 'Sankey Diagram',
+    },
+    block: {
+      'en': 'Block Diagram',
+      'zh-CN': 'Block Diagram',
+      'zh-TW': 'Block Diagram',
+      'ja': 'Block Diagram',
+      'es': 'Block Diagram',
+      'pt': 'Block Diagram',
+    },
+    architecture: {
+      'en': 'Architecture Diagram',
+      'zh-CN': 'Architecture Diagram',
+      'zh-TW': 'Architecture Diagram',
+      'ja': 'Architecture Diagram',
+      'es': 'Architecture Diagram',
+      'pt': 'Architecture Diagram',
+    },
+    kanban: {
+      'en': 'Kanban Board',
+      'zh-CN': 'Kanban Board',
+      'zh-TW': 'Kanban Board',
+      'ja': 'Kanban Board',
+      'es': 'Kanban Board',
+      'pt': 'Kanban Board',
+    },
+    packet: {
+      'en': 'Packet Diagram',
+      'zh-CN': 'Packet Diagram',
+      'zh-TW': 'Packet Diagram',
+      'ja': 'Packet Diagram',
+      'es': 'Packet Diagram',
+      'pt': 'Packet Diagram',
+    },
+    radar: {
+      'en': 'Radar Chart',
+      'zh-CN': 'Radar Chart',
+      'zh-TW': 'Radar Chart',
+      'ja': 'Radar Chart',
+      'es': 'Radar Chart',
+      'pt': 'Radar Chart',
+    },
+    treemap: {
+      'en': 'Treemap',
+      'zh-CN': 'Treemap',
+      'zh-TW': 'Treemap',
+      'ja': 'Treemap',
+      'es': 'Treemap',
+      'pt': 'Treemap',
+    },
+    venn: {
+      'en': 'Venn Diagram',
+      'zh-CN': 'Venn Diagram',
+      'zh-TW': 'Venn Diagram',
+      'ja': 'Venn Diagram',
+      'es': 'Venn Diagram',
+      'pt': 'Venn Diagram',
+    },
+    swimlane: {
+      'en': 'Swimlane Diagram',
+      'zh-CN': 'Swimlane Diagram',
+      'zh-TW': 'Swimlane Diagram',
+      'ja': 'Swimlane Diagram',
+      'es': 'Swimlane Diagram',
+      'pt': 'Swimlane Diagram',
+    },
+    wardley: {
+      'en': 'Wardley Map',
+      'zh-CN': 'Wardley Map',
+      'zh-TW': 'Wardley Map',
+      'ja': 'Wardley Map',
+      'es': 'Wardley Map',
+      'pt': 'Wardley Map',
+    },
+    cynefin: {
+      'en': 'Cynefin Framework',
+      'zh-CN': 'Cynefin Framework',
+      'zh-TW': 'Cynefin Framework',
+      'ja': 'Cynefin Framework',
+      'es': 'Cynefin Framework',
+      'pt': 'Cynefin Framework',
+    },
+    ishikawa: {
+      'en': 'Ishikawa Diagram',
+      'zh-CN': 'Ishikawa Diagram',
+      'zh-TW': 'Ishikawa Diagram',
+      'ja': 'Ishikawa Diagram',
+      'es': 'Ishikawa Diagram',
+      'pt': 'Ishikawa Diagram',
+    },
+    info: {
+      'en': 'Info',
+      'zh-CN': 'Info',
+      'zh-TW': 'Info',
+      'ja': 'Info',
+      'es': 'Info',
+      'pt': 'Info',
+    },
+    railroadEbnf: {
+      'en': 'Railroad (EBNF)',
+      'zh-CN': 'Railroad (EBNF)',
+      'zh-TW': 'Railroad (EBNF)',
+      'ja': 'Railroad (EBNF)',
+      'es': 'Railroad (EBNF)',
+      'pt': 'Railroad (EBNF)',
+    },
+    railroadAbnf: {
+      'en': 'Railroad (ABNF)',
+      'zh-CN': 'Railroad (ABNF)',
+      'zh-TW': 'Railroad (ABNF)',
+      'ja': 'Railroad (ABNF)',
+      'es': 'Railroad (ABNF)',
+      'pt': 'Railroad (ABNF)',
+    },
+    railroadPeg: {
+      'en': 'Railroad (PEG)',
+      'zh-CN': 'Railroad (PEG)',
+      'zh-TW': 'Railroad (PEG)',
+      'ja': 'Railroad (PEG)',
+      'es': 'Railroad (PEG)',
+      'pt': 'Railroad (PEG)',
     },
   };
   
