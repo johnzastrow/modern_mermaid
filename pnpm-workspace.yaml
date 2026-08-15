@@ -3,3 +3,17 @@
 # esbuild is a trusted, first-party Vite dependency that compiles its native binary.
 onlyBuiltDependencies:
   - esbuild
+
+# Forced versions for transitive dependencies that normal resolution cannot reach.
+# pnpm 11 reads overrides from this file, not from package.json.
+overrides:
+  # ajv depends on "fast-uri": "^3.0.1". The maintained 3.x line sits behind the
+  # "three" dist-tag because "latest" now points at 4.x, so plain resolution stops
+  # at 3.1.0 and never picks up the patched 3.1.5 — this is exactly why Dependabot
+  # reported security_update_not_possible. Staying on 3.x keeps ajv's range satisfied.
+  fast-uri: ^3.1.5
+  # vite-plugin-pwa declares workbox-build/workbox-window ^7.4.1, but the lockfile
+  # had drifted to 7.4.0 in violation of that range. 7.4.0 carries a legacy build
+  # subtree (rollup@2, lodash, ejs/jake, serialize-javascript@6) that 7.4.1 drops.
+  workbox-build: ^7.4.1
+  workbox-window: ^7.4.1
