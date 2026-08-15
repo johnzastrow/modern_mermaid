@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import { X, RotateCcw, Save, FilePlus2, ChevronDown, RefreshCw } from 'lucide-react';
 import type { ThemeConfig } from '../utils/themes';
 import { fonts } from '../utils/fonts';
+import {
+  readRadius,
+  writeRadius,
+  readLineWidth,
+  writeLineWidth,
+  readArrowScale,
+  writeArrowScale,
+} from '../utils/managedCss';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface ThemeEditorProps {
@@ -32,33 +40,9 @@ const COLOR_FIELDS: { key: string; label: string }[] = [
 const isHex = (v: unknown): v is string =>
   typeof v === 'string' && /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v.trim());
 
-// The corner-radius control writes a marker-delimited block into themeCSS so it
-// can be updated idempotently without disturbing the user's own CSS.
-const RADIUS_START = '/* mm:radius:start */';
-const RADIUS_END = '/* mm:radius:end */';
-
-function stripManagedRadius(css: string): string {
-  const s = css.indexOf(RADIUS_START);
-  if (s === -1) return css;
-  const e = css.indexOf(RADIUS_END, s);
-  if (e === -1) return css;
-  return (css.slice(0, s) + css.slice(e + RADIUS_END.length)).replace(/\n{3,}/g, '\n\n').trim();
-}
-
-function readRadius(css: string): number {
-  const s = css.indexOf(RADIUS_START);
-  if (s === -1) return 0;
-  const seg = css.slice(s, css.indexOf(RADIUS_END, s) + RADIUS_END.length);
-  const m = seg.match(/rx:\s*([\d.]+)px/);
-  return m ? Math.round(Number(m[1])) : 0;
-}
-
-function writeRadius(css: string, px: number): string {
-  const base = stripManagedRadius(css);
-  if (!px) return base;
-  const block = `${RADIUS_START}\n.node rect, .node polygon, .cluster rect { rx: ${px}px !important; ry: ${px}px !important; }\n${RADIUS_END}`;
-  return base ? `${base}\n\n${block}` : block;
-}
+// Corner radius, connector width and arrow size have no Mermaid themeVariable,
+// so each writes a marker-delimited block into themeCSS instead. See
+// utils/managedCss.ts for why, and for the caveat about where themeCSS applies.
 
 const ThemeEditor: React.FC<ThemeEditorProps> = ({ theme, onChange, onClose, onReset, onNew, onSave, onReload }) => {
   const { t, language } = useLanguage();
@@ -68,6 +52,10 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({ theme, onChange, onClose, onR
   const currentFont = typeof vars.fontFamily === 'string' ? (vars.fontFamily as string) : '';
   const currentCss = typeof theme.mermaidConfig.themeCSS === 'string' ? theme.mermaidConfig.themeCSS : '';
   const radius = readRadius(currentCss);
+  const lineWidth = readLineWidth(currentCss);
+  const arrowScale = readArrowScale(currentCss);
+  // Only nag when one of the CSS-only controls is actually in use.
+  const usesThemeCss = radius > 0 || lineWidth > 0 || arrowScale !== 1;
 
   const setVar = (key: string, value: unknown) => {
     onChange({
@@ -149,6 +137,35 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({ theme, onChange, onClose, onR
             className="flex-1 cursor-pointer" />
           <span className="w-9 text-right text-xs font-mono text-gray-600 dark:text-gray-300">{radius}px</span>
         </div>
+
+        {/* Connector line width. 0 leaves Mermaid's own widths alone. */}
+        <div className="flex items-center gap-2">
+          <span className="w-24 flex-shrink-0 text-xs text-gray-600 dark:text-gray-300">{t.lineWidth || 'Line width'}</span>
+          <input type="range" min={0} max={8} step={0.5} value={lineWidth}
+            onChange={(e) => setCss(writeLineWidth(currentCss, Number(e.target.value)))}
+            className="flex-1 cursor-pointer" />
+          <span className="w-9 text-right text-xs font-mono text-gray-600 dark:text-gray-300">
+            {lineWidth ? `${lineWidth}px` : 'auto'}
+          </span>
+        </div>
+
+        {/* Arrow head size, as a multiplier of whatever the diagram type draws. */}
+        <div className="flex items-center gap-2">
+          <span className="w-24 flex-shrink-0 text-xs text-gray-600 dark:text-gray-300">{t.arrowSize || 'Arrow size'}</span>
+          <input type="range" min={1} max={3} step={0.1} value={arrowScale}
+            onChange={(e) => setCss(writeArrowScale(currentCss, Number(e.target.value)))}
+            className="flex-1 cursor-pointer" />
+          <span className="w-9 text-right text-xs font-mono text-gray-600 dark:text-gray-300">
+            {arrowScale === 1 ? 'auto' : `${arrowScale.toFixed(1)}x`}
+          </span>
+        </div>
+
+        {usesThemeCss && (
+          <p className="text-[11px] leading-snug text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/40 rounded px-2 py-1.5">
+            {t.themeCssPortabilityWarning ||
+              'Corner radius, line width and arrow size are themeCSS — there are no Mermaid theme variables for them. They export only via YAML frontmatter, not the inline %%{init}%% form, and GitHub strips themeCSS entirely. Colors and fonts travel everywhere.'}
+          </p>
+        )}
 
         {/* Font picker with live previews */}
         <div>

@@ -133,6 +133,9 @@ export interface Translation {
   themeSaved?: string;
   savedThemesLabel?: string;
   cornerRadius?: string;
+  lineWidth?: string;
+  arrowSize?: string;
+  themeCssPortabilityWarning?: string;
   reloadDiagram?: string;
   importConfig?: string;
   importTitle?: string;
