@@ -36,6 +36,46 @@ jobs:
       - name: Audit production dependencies
         run: pnpm audit --prod --audit-level high
 
+  e2e:
+    name: Browser tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Only Chromium: these tests cover rendering and download plumbing that
+      # jsdom cannot do at all, not cross-browser differences. Adding engines
+      # would triple the runtime for very little extra signal.
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      # playwright.config.ts serves the production build via `vite preview`,
+      # so the browser tests exercise the same artifact the container ships.
+      - run: pnpm build
+
+      - run: pnpm typecheck:e2e
+
+      - run: pnpm test:e2e
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
   docker:
     name: Build container image
     runs-on: ubuntu-latest
