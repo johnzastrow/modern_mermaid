@@ -15,3 +15,8 @@ README*.md
 CHANGELOG.md
 CONTRIBUTING.md
 GEMINI.md
+e2e
+playwright.config.ts
+test-results
+playwright-report
+tsconfig.e2e.json

@@ -3,6 +3,43 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.2] - 2026-08-16
+
+### Added
+- **Playwright browser tests** for `Preview` and `Layout` — 25 specs covering
+  the behaviour jsdom cannot reach. Under jsdom `getBBox` returns zeros and
+  `mermaid.render` throws outright, so these two components had no meaningful
+  coverage at all; downloads, Blob URLs and the async clipboard were equally
+  out of reach.
+- `pnpm test:e2e`, `pnpm test:e2e:ui`, and `pnpm typecheck:e2e`. A separate
+  **Browser tests** CI job installs Chromium only, builds, typechecks the specs
+  and runs them, uploading the Playwright report when it fails.
+
+### Notes
+- Tests run against the **production build** via `vite preview`, so what they
+  verify is the artifact the container actually ships — minified, hashed, with
+  the real service worker.
+- The most valuable specs prove things previously only checked by hand: the
+  line-width slider raises a connector's *computed* `stroke-width`, the arrow
+  slider produces a real `matrix(...)` transform on marker paths with
+  `overflow: visible` in effect, an exported SVG opens as a standalone document
+  and renders, and a share link round-trips a diagram through the clipboard.
+- Chromium only. These tests target rendering and download plumbing, not
+  cross-browser differences; more engines would triple CI time for little
+  signal.
+- Assertions on diagram labels use presence rather than visibility. Mermaid
+  transforms individual SVG text nodes in ways that defeat Playwright's
+  visibility heuristic — journey task labels report `hidden` while plainly
+  drawn — so the SVG root is asserted visible and the labels asserted present.
+
+### Fixed
+- Vitest's default glob matched the Playwright specs in `e2e/`, which import
+  `@playwright/test` and cannot run under it. `include` is now scoped to `src`.
+- `tsconfig.e2e.json` is deliberately **not** referenced from the root project.
+  `.dockerignore` strips `e2e/` from the build context, so referencing it made
+  `tsc -b` fail inside the container with TS18003. The specs are typechecked by
+  `pnpm typecheck:e2e` in CI instead, and the production build stays lean.
+
 ## [0.4.1] - 2026-08-16
 
 ### Changed

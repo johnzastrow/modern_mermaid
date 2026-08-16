@@ -7,6 +7,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.ts',
+    // Vitest's default glob would also match the Playwright specs in e2e/,
+    // which import @playwright/test and cannot run under this runner.
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
     coverage: {
       provider: 'v8',
       // Report on every source file, not only the ones a test happened to

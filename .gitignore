@@ -33,3 +33,9 @@ coverage
 .env.production.local
 
 .qoder
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
