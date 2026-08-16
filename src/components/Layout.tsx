@@ -12,6 +12,7 @@ import { themes } from '../utils/themes';
 import type { ThemeType, ThemeConfig } from '../utils/themes';
 import ThemeEditor from './ThemeEditor';
 import { loadSavedThemes, persistSavedThemes, makeBlankTheme, type SavedThemes } from '../utils/customThemes';
+import { buildLibraryExport, downloadLibrary, pickLibraryFile, parseLibraryFile, mergeLibrary } from '../utils/themeLibrary';
 import type { ExportableConfig } from '../utils/configExport';
 import { backgrounds, type BackgroundStyle } from '../utils/backgrounds';
 import { fonts, type FontOption } from '../utils/fonts';
@@ -54,6 +55,12 @@ const Layout: React.FC = () => {
     
     if (previewRef.current) {
       previewRef.current.exportImage(transparent);
+    }
+  };
+
+  const handleDownloadSvg = (transparent: boolean) => {
+    if (previewRef.current) {
+      previewRef.current.exportSvg(transparent);
     }
   };
 
@@ -207,6 +214,37 @@ const Layout: React.FC = () => {
   const handleNewTheme = () => {
     setCustomTheme(makeBlankTheme());
     setIsEditorOpen(true);
+  };
+
+  const handleExportLibrary = () => {
+    downloadLibrary(buildLibraryExport(savedThemes));
+  };
+
+  const handleImportLibrary = async () => {
+    const text = await pickLibraryFile();
+    if (text === null) return; // cancelled
+
+    const parsed = parseLibraryFile(text);
+    if (!parsed) {
+      setToastMessage(t.themeLibraryImportFailed || 'That file is not a theme library.');
+      setShowToast(true);
+      return;
+    }
+
+    // Collisions rename rather than overwrite, so an import can never destroy
+    // a theme the user already has.
+    const { merged, renamed } = mergeLibrary(savedThemes, parsed.themes);
+    setSavedThemes(merged);
+    persistSavedThemes(merged);
+
+    const added = Object.keys(parsed.themes).length;
+    const notes = [
+      `${added} ${added === 1 ? 'theme' : 'themes'} imported`,
+      Object.keys(renamed).length ? `${Object.keys(renamed).length} renamed to avoid overwriting` : '',
+      parsed.skipped.length ? `${parsed.skipped.length} skipped` : '',
+    ].filter(Boolean);
+    setToastMessage(notes.join(' — '));
+    setShowToast(true);
   };
 
   const handleSaveTheme = () => {
@@ -440,6 +478,7 @@ const Layout: React.FC = () => {
                 onThemeChange={handleThemeChange}
                 onDownload={handleDownload}
                 onCopy={handleCopy}
+                onDownloadSvg={handleDownloadSvg}
                 onShare={handleShare}
                 selectedBackground={selectedBackground.id}
                 onBackgroundChange={handleBackgroundChange}
@@ -461,6 +500,9 @@ const Layout: React.FC = () => {
                  onNew={handleNewTheme}
                  onSave={handleSaveTheme}
                  onReload={handleRefreshEditor}
+                 onExportLibrary={handleExportLibrary}
+                 onImportLibrary={handleImportLibrary}
+                 savedThemeCount={Object.keys(savedThemes).length}
                />
              </div>
            )}

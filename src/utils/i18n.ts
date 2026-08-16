@@ -132,6 +132,15 @@ export interface Translation {
   saveTheme?: string;
   themeSaved?: string;
   savedThemesLabel?: string;
+  exportLibrary?: string;
+  exportLibraryEmpty?: string;
+  importLibrary?: string;
+  themeLibraryImportFailed?: string;
+  svgWithBackground?: string;
+  svgWithBackgroundDesc?: string;
+  svgTransparent?: string;
+  svgTransparentDesc?: string;
+  svgExportNote?: string;
   cornerRadius?: string;
   lineWidth?: string;
   arrowSize?: string;

@@ -12,8 +12,10 @@ const baseTheme = (themeCSS = ''): ThemeConfig => ({
   annotationColors: { primary: '#f00', secondary: '#0f0', text: '#000' },
 });
 
-function setup(themeCSS = '') {
+function setup(themeCSS = '', extra: Partial<{ savedThemeCount: number }> = {}) {
   const onChange = vi.fn();
+  const onExportLibrary = vi.fn();
+  const onImportLibrary = vi.fn();
   render(
     <LanguageProvider>
       <ThemeEditor
@@ -24,12 +26,15 @@ function setup(themeCSS = '') {
         onNew={vi.fn()}
         onSave={vi.fn()}
         onReload={vi.fn()}
+        onExportLibrary={onExportLibrary}
+        onImportLibrary={onImportLibrary}
+        savedThemeCount={extra.savedThemeCount ?? 0}
       />
     </LanguageProvider>,
   );
   // Panel order: corner radius, line width, arrow size.
   const [radius, lineWidth, arrow] = screen.getAllByRole('slider') as HTMLInputElement[];
-  return { onChange, radius, lineWidth, arrow };
+  return { onChange, radius, lineWidth, arrow, onExportLibrary, onImportLibrary };
 }
 
 /** The themeCSS the component handed back on its most recent onChange call. */
@@ -90,5 +95,29 @@ describe('themeCSS portability warning', () => {
     setup('/* mm:arrow:start */\nmarker path { transform: scale(2); }\n/* mm:arrow:end */');
     expect(screen.getByText(/frontmatter/i)).toBeTruthy();
     expect(screen.getByText(/GitHub/i)).toBeTruthy();
+  });
+});
+
+describe('theme library backup', () => {
+  it('disables export while the library is empty', () => {
+    setup('', { savedThemeCount: 0 });
+    const button = screen.getByTitle(/no saved themes to export/i) as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+  });
+
+  it('enables export once themes exist and calls back on click', () => {
+    const { onExportLibrary } = setup('', { savedThemeCount: 3 });
+    const button = screen.getByTitle(/export all saved themes/i) as HTMLButtonElement;
+    expect(button.disabled).toBe(false);
+    button.click();
+    expect(onExportLibrary).toHaveBeenCalledOnce();
+  });
+
+  it('offers import regardless of how many themes are saved', () => {
+    const { onImportLibrary } = setup('', { savedThemeCount: 0 });
+    const button = screen.getByTitle(/import saved themes/i) as HTMLButtonElement;
+    expect(button.disabled).toBe(false);
+    button.click();
+    expect(onImportLibrary).toHaveBeenCalledOnce();
   });
 });

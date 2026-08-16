@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, RotateCcw, Save, FilePlus2, ChevronDown, RefreshCw } from 'lucide-react';
+import { X, RotateCcw, Save, FilePlus2, ChevronDown, RefreshCw, FolderDown, FolderUp } from 'lucide-react';
 import type { ThemeConfig } from '../utils/themes';
 import { fonts } from '../utils/fonts';
 import {
@@ -25,6 +25,12 @@ interface ThemeEditorProps {
   onSave: () => void;
   /** Force the preview to re-render (e.g. after editing raw themeCSS). */
   onReload: () => void;
+  /** Save every saved theme to a JSON file. */
+  onExportLibrary: () => void;
+  /** Merge a saved-theme JSON file into the library. */
+  onImportLibrary: () => void;
+  /** How many themes are in the library, so export can be disabled when empty. */
+  savedThemeCount: number;
 }
 
 const COLOR_FIELDS: { key: string; label: string }[] = [
@@ -44,7 +50,10 @@ const isHex = (v: unknown): v is string =>
 // so each writes a marker-delimited block into themeCSS instead. See
 // utils/managedCss.ts for why, and for the caveat about where themeCSS applies.
 
-const ThemeEditor: React.FC<ThemeEditorProps> = ({ theme, onChange, onClose, onReset, onNew, onSave, onReload }) => {
+const ThemeEditor: React.FC<ThemeEditorProps> = ({
+  theme, onChange, onClose, onReset, onNew, onSave, onReload,
+  onExportLibrary, onImportLibrary, savedThemeCount,
+}) => {
   const { t, language } = useLanguage();
   const [showCss, setShowCss] = useState(false);
   const [showFonts, setShowFonts] = useState(false);
@@ -100,6 +109,25 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({ theme, onChange, onClose, onR
         <div className="flex items-center gap-0.5">
           <button onClick={onNew} title={t.newTheme || 'New blank theme'} className={iconBtn}><FilePlus2 className="w-4 h-4" /></button>
           <button onClick={onSave} title={t.saveTheme || 'Save theme'} className={iconBtn}><Save className="w-4 h-4" /></button>
+          <button
+            onClick={onExportLibrary}
+            disabled={savedThemeCount === 0}
+            title={
+              savedThemeCount === 0
+                ? (t.exportLibraryEmpty || 'No saved themes to export yet')
+                : (t.exportLibrary || 'Export all saved themes to a file')
+            }
+            className={`${iconBtn} disabled:opacity-30 disabled:cursor-not-allowed`}
+          >
+            <FolderDown className="w-4 h-4" />
+          </button>
+          <button
+            onClick={onImportLibrary}
+            title={t.importLibrary || 'Import saved themes from a file'}
+            className={iconBtn}
+          >
+            <FolderUp className="w-4 h-4" />
+          </button>
           <button onClick={onReset} title={t.reset || 'Revert to preset'} className={iconBtn}><RotateCcw className="w-4 h-4" /></button>
           <button onClick={onClose} title={t.close || 'Close'} className={iconBtn}><X className="w-4 h-4" /></button>
         </div>

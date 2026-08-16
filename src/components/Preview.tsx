@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import mermaid from 'mermaid';
 import { toPng, toJpeg } from 'html-to-image';
+import { buildStandaloneSvg, downloadSvg } from '../utils/svgExport';
 import { ZoomIn, ZoomOut, Maximize2, Move, Target } from 'lucide-react';
 import type { ThemeConfig } from '../utils/themes';
 import type { BackgroundStyle } from '../utils/backgrounds';
@@ -26,6 +27,8 @@ interface PreviewProps {
 
 export interface PreviewHandle {
   exportImage: (transparent: boolean) => Promise<void>;
+  /** Serialize the rendered SVG itself (true vector, no annotations). */
+  exportSvg: (transparent: boolean) => Promise<void>;
   copyImage: (transparent: boolean) => Promise<void>;
   clearAnnotations: () => void;
   refresh: () => void;
@@ -950,11 +953,34 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
         }
       }
     },
+    // Vector export. Unlike exportImage this does not rasterize the preview
+    // node — it serializes the SVG Mermaid produced, so annotations (an HTML
+    // overlay) are not captured. The Toolbar entry says so.
+    exportSvg: async (transparent: boolean) => {
+      if (!contentRef.current || !svg) return;
+
+      setExporting(true);
+      try {
+        const svgElement = contentRef.current.querySelector('svg');
+        if (!svgElement) return;
+
+        const background = transparent
+          ? undefined
+          : actualBgStyle?.backgroundColor ||
+            getComputedStyle(containerRef.current!).backgroundColor;
+
+        downloadSvg(buildStandaloneSvg(svgElement as SVGSVGElement, { background }));
+      } catch (err) {
+        console.error('SVG export failed', err);
+      } finally {
+        setTimeout(() => setExporting(false), 300);
+      }
+    },
     exportImage: async (transparent: boolean) => {
       if (!contentRef.current || !svg) return;
-      
+
       setExporting(true); // 开始导出Loading
-      
+
       try {
         const node = contentRef.current;
         
