@@ -3,6 +3,42 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-08-16
+
+### Added
+- **SVG export**, as two more entries in the Export menu (with background, and
+  transparent). Unlike the PNG/JPG path, which rasterizes the preview node with
+  `html-to-image`, this serializes the `<svg>` Mermaid actually rendered — true
+  vector, roughly 15 KB against 200 KB+ for the same diagram as PNG, and
+  diffable in git. Verified end to end: an exported file opens standalone with
+  colors, corner radius, line width and arrow scaling all intact.
+- **Theme library backup.** Two buttons in the theme editor header export every
+  saved theme to a JSON file and merge one back in. Saved themes previously
+  lived only in the `mm-custom-themes` localStorage key, so clearing browser
+  data destroyed them and there was no way to move a set between machines.
+
+### Security
+- An imported library is untrusted input. Every field is allowlisted and
+  coerced, `themeCSS` goes through the same `sanitizeThemeCSS` boundary the
+  paste-a-config import already uses, `bgStyle` values carrying a URL scheme are
+  dropped, and each theme's name is taken from its map key rather than the
+  payload so a crafted file cannot overwrite an unrelated saved theme. File size
+  and theme count are both capped. Nothing is ever evaluated.
+- **Importing never overwrites.** A name collision renames the incoming theme
+  (`Name (imported)`, then `(imported 2)`, …) rather than replacing what is
+  already saved; losing hand-made work to a filename clash would be the worst
+  outcome available, so the merge fails safe.
+
+### Notes
+- SVG export deliberately does **not** include annotations: they are an HTML
+  overlay on top of the preview, not part of the diagram's SVG. The menu says
+  so. Use PNG/JPG to capture annotated diagrams.
+- Fonts in an exported SVG are referenced, not embedded, so a custom font falls
+  back where it is not installed. Embedding would mean inlining the font file.
+- Clipboard copy was already implemented (`copyImage`, wired through the Copy
+  menu with opaque and transparent variants) and needed no work — it had been
+  listed as a gap in error.
+
 ## [0.3.0] - 2026-08-15
 
 ### Added

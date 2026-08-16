@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Palette, Image, FileImage, MousePointer, ArrowRight, Type, Square, Circle, Minus, Trash2, Copy, Share2, Code, SlidersHorizontal, ClipboardPaste } from 'lucide-react';
+import { Download, Palette, Image, FileImage, MousePointer, ArrowRight, Type, Square, Circle, Minus, Trash2, Copy, Share2, Code, SlidersHorizontal, ClipboardPaste, Shapes } from 'lucide-react';
 import { themes } from '../utils/themes';
 import type { ThemeType, ThemeConfig } from '../utils/themes';
 import type { SavedThemes } from '../utils/customThemes';
@@ -24,6 +24,7 @@ interface ToolbarProps {
   onThemeChange: (theme: ThemeType) => void;
   onDownload: (transparent: boolean) => void;
   onCopy: (transparent: boolean) => void;
+  onDownloadSvg: (transparent: boolean) => void;
   onShare: () => void;
   selectedBackground: string;
   onBackgroundChange: (bg: BackgroundStyle) => void;
@@ -46,6 +47,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onThemeChange,
   onDownload,
   onCopy,
+  onDownloadSvg,
   onShare,
   selectedBackground,
   onBackgroundChange,
@@ -326,6 +328,37 @@ const Toolbar: React.FC<ToolbarProps> = ({
                  <span className="block text-xs text-gray-500 dark:text-gray-400">{t.transparentDesc}</span>
                </div>
              </button>
+
+             <div className="my-1 border-t border-gray-200 dark:border-gray-700" />
+
+             <button
+               onClick={() => { onDownloadSvg(false); setIsDownloadOpen(false); }}
+               className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+             >
+               <Shapes className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+               <div>
+                 <span className="block font-medium">{t.svgWithBackground || 'SVG (vector)'}</span>
+                 <span className="block text-xs text-gray-500 dark:text-gray-400">
+                   {t.svgWithBackgroundDesc || 'Scalable, small, diffable in git'}
+                 </span>
+               </div>
+             </button>
+             <button
+               onClick={() => { onDownloadSvg(true); setIsDownloadOpen(false); }}
+               className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+             >
+               <Shapes className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+               <div>
+                 <span className="block font-medium">{t.svgTransparent || 'SVG (transparent)'}</span>
+                 <span className="block text-xs text-gray-500 dark:text-gray-400">
+                   {t.svgTransparentDesc || 'Vector, no background'}
+                 </span>
+               </div>
+             </button>
+             <p className="px-4 pt-1.5 pb-1 text-[11px] leading-snug text-gray-400 dark:text-gray-500">
+               {t.svgExportNote ||
+                 'SVG exports the diagram only — annotations are an overlay and are not included. Fonts are referenced, not embedded.'}
+             </p>
            </div>
          </>
         )}
