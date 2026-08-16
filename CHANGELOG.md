@@ -3,6 +3,41 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-08-15
+
+### Added
+- **Connector line width** and **arrow head size** sliders in the theme editor,
+  alongside the existing corner-radius control. Line width is a pixel value
+  (`auto` leaves Mermaid's own widths alone); arrow size is a multiplier of
+  whatever the diagram type draws.
+- A **portability warning** in the theme editor, shown only while one of these
+  CSS-only controls is in use. These three settings are `themeCSS`, so they
+  export via YAML frontmatter but not the inline `%%{init}%%` form, and GitHub
+  strips `themeCSS` entirely. Colors and fonts remain portable everywhere.
+- `src/utils/managedCss.ts`, extracting the marker-delimited `themeCSS` block
+  helpers that previously lived inline in `ThemeEditor` and served only the
+  radius slider. All three controls now share one idempotent implementation,
+  covered by `managedCss.test.ts` and `ThemeEditor.test.tsx` (142 tests total).
+
+### Notes
+- Neither setting has a Mermaid `themeVariable`, so CSS is the only route.
+  Both rules were verified against diagrams rendered in Chrome rather than
+  derived from documentation:
+  - Connector selectors were read off real output and differ per diagram type
+    (`.flowchart-link`, `.messageLine0/1`, `.relation`, `.transition`,
+    `.relationshipLine`, `.edge-thickness-normal`). The sequence lifeline
+    (`.actor-line`) is deliberately excluded — it is not a connector.
+  - Arrow heads are `<marker>` elements sized by `markerWidth`/`markerHeight`
+    *attributes*, which CSS cannot set. Scaling the marker's path is the only
+    option, and `marker { overflow: visible }` is **mandatory**: a marker clips
+    to its viewport by default, so scaling without it shrinks the head into a
+    clipped blob instead of enlarging it.
+- jest-dom's matchers (`toBeInTheDocument` and friends) work at runtime but do
+  not typecheck under vitest 4: jest-dom 6.9.1 augments `Assertion` in module
+  `vitest`, while vitest 4 re-exports that interface from `@vitest/expect`, so
+  the augmentation never merges. Component tests use plain matchers until the
+  6.9.1 pin is lifted. This is further reason 6.x is a dead end for this repo.
+
 ## [0.2.0] - 2026-08-15
 
 ### Added
