@@ -51,9 +51,9 @@ function drag(input: HTMLInputElement, value: number) {
 describe('ThemeEditor style sliders', () => {
   it('renders corner radius, line width and arrow size together', () => {
     setup();
-    expect(screen.getByText(/corner radius/i)).toBeTruthy();
-    expect(screen.getByText(/line width/i)).toBeTruthy();
-    expect(screen.getByText(/arrow size/i)).toBeTruthy();
+    expect(screen.getByText(/corner radius/i)).toBeInTheDocument();
+    expect(screen.getByText(/line width/i)).toBeInTheDocument();
+    expect(screen.getByText(/arrow size/i)).toBeInTheDocument();
   });
 
   it('shows the unset state as "auto" for line width and arrow size', () => {
@@ -63,7 +63,7 @@ describe('ThemeEditor style sliders', () => {
 
   it('reflects a value parsed back out of existing themeCSS', () => {
     setup('/* mm:linewidth:start */\n.flowchart-link { stroke-width: 3px !important; }\n/* mm:linewidth:end */');
-    expect(screen.getByText('3px')).toBeTruthy();
+    expect(screen.getByText('3px')).toBeInTheDocument();
   });
 
   it('writes a line width into themeCSS', () => {
@@ -88,13 +88,13 @@ describe('ThemeEditor style sliders', () => {
 describe('themeCSS portability warning', () => {
   it('stays hidden while no CSS-only control is in use', () => {
     setup();
-    expect(screen.queryByText(/frontmatter/i)).toBeNull();
+    expect(screen.queryByText(/frontmatter/i)).not.toBeInTheDocument();
   });
 
   it('appears once a CSS-only control is set', () => {
     setup('/* mm:arrow:start */\nmarker path { transform: scale(2); }\n/* mm:arrow:end */');
-    expect(screen.getByText(/frontmatter/i)).toBeTruthy();
-    expect(screen.getByText(/GitHub/i)).toBeTruthy();
+    expect(screen.getByText(/frontmatter/i)).toBeInTheDocument();
+    expect(screen.getByText(/GitHub/i)).toBeInTheDocument();
   });
 });
 
@@ -102,13 +102,13 @@ describe('theme library backup', () => {
   it('disables export while the library is empty', () => {
     setup('', { savedThemeCount: 0 });
     const button = screen.getByTitle(/no saved themes to export/i) as HTMLButtonElement;
-    expect(button.disabled).toBe(true);
+    expect(button).toBeDisabled();
   });
 
   it('enables export once themes exist and calls back on click', () => {
     const { onExportLibrary } = setup('', { savedThemeCount: 3 });
     const button = screen.getByTitle(/export all saved themes/i) as HTMLButtonElement;
-    expect(button.disabled).toBe(false);
+    expect(button).toBeEnabled();
     button.click();
     expect(onExportLibrary).toHaveBeenCalledOnce();
   });
@@ -116,7 +116,7 @@ describe('theme library backup', () => {
   it('offers import regardless of how many themes are saved', () => {
     const { onImportLibrary } = setup('', { savedThemeCount: 0 });
     const button = screen.getByTitle(/import saved themes/i) as HTMLButtonElement;
-    expect(button.disabled).toBe(false);
+    expect(button).toBeEnabled();
     button.click();
     expect(onImportLibrary).toHaveBeenCalledOnce();
   });

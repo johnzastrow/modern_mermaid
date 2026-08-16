@@ -1,7 +1,7 @@
 {
   "name": "mermaid_advanced",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "type": "module",
   "packageManager": "pnpm@11.10.0",
   "scripts": {
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.4",
     "@types/chrome": "^0.2.6",
@@ -35,6 +35,7 @@
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.0.5",
     "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/expect": "^4.1.10",
     "autoprefixer": "^10.5.4",
     "eslint": "^10.8.1",
     "eslint-plugin-react-hooks": "^7.1.1",
