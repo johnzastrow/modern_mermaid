@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   buildLibraryExport,
   parseLibraryFile,
@@ -147,5 +147,65 @@ describe('mergeLibrary', () => {
     const existing = library('A');
     mergeLibrary(existing, library('A'));
     expect(Object.keys(existing)).toEqual(['A']);
+  });
+});
+
+describe('browser plumbing', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('downloads the library as an application/json blob', async () => {
+    const { downloadLibrary } = await import('./themeLibrary');
+    const created: Blob[] = [];
+    let downloadName = '';
+    vi.spyOn(URL, 'createObjectURL').mockImplementation((b) => { created.push(b as Blob); return 'blob:stub'; });
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const realCreate = document.createElement.bind(document);
+    vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+      const el = realCreate(tag);
+      if (tag === 'a') (el as HTMLAnchorElement).click = () => { downloadName = (el as HTMLAnchorElement).download; };
+      return el;
+    });
+
+    downloadLibrary(buildLibraryExport(library('A')), 'themes.json');
+    expect(created[0].type).toBe('application/json;charset=utf-8');
+    expect(downloadName).toBe('themes.json');
+  });
+
+  it('resolves the file text the user picked', async () => {
+    const { pickLibraryFile } = await import('./themeLibrary');
+    const realCreate = document.createElement.bind(document);
+    let input: HTMLInputElement | null = null;
+    vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+      const el = realCreate(tag);
+      if (tag === 'input') {
+        input = el as HTMLInputElement;
+        (el as HTMLInputElement).click = () => {
+          const file = new File(['{"kind":"x"}'], 'themes.json', { type: 'application/json' });
+          Object.defineProperty(input!, 'files', { value: [file], configurable: true });
+          input!.onchange?.(new Event('change'));
+        };
+      }
+      return el;
+    });
+
+    await expect(pickLibraryFile()).resolves.toBe('{"kind":"x"}');
+    expect(input!.accept).toContain('json');
+  });
+
+  it('resolves null when the picker is dismissed without a file', async () => {
+    const { pickLibraryFile } = await import('./themeLibrary');
+    const realCreate = document.createElement.bind(document);
+    vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+      const el = realCreate(tag);
+      if (tag === 'input') {
+        (el as HTMLInputElement).click = () => {
+          Object.defineProperty(el, 'files', { value: [], configurable: true });
+          (el as HTMLInputElement).onchange?.(new Event('change'));
+        };
+      }
+      return el;
+    });
+
+    await expect(pickLibraryFile()).resolves.toBeNull();
   });
 });

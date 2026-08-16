@@ -3,6 +3,46 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.1] - 2026-08-16
+
+### Changed
+- Upgraded `@testing-library/jest-dom` 6.9.1 -> 7.0.1 and **lifted the exact
+  pin** back to a caret range. The 6.x line was a dead end: 6.10.0 was
+  deprecated by its author for shipping breaking changes in a minor, leaving
+  6.9.1 as the last usable release.
+- Coverage now reports on **every** source file (`all: true`) rather than only
+  the ones a test happens to import. The previous configuration reported 80%
+  while entire modules were untested and simply absent from the table; the
+  honest figure at that moment was 15.9%. Large literal catalogues
+  (`themes`, `fonts`, `backgrounds`) are excluded as data rather than logic.
+
+### Fixed
+- jest-dom's matchers now typecheck under `tsc -b`. **Correcting an earlier
+  note in this changelog: the 7.x upgrade does not fix this on its own** —
+  7.0.1's `vitest.d.ts` is byte-identical to 6.9.1's. The real cause is that
+  jest-dom augments `Assertion` in module `vitest`, while Vitest 4 declares
+  that interface in `@vitest/expect` and merely re-exports it, and a module
+  augmentation cannot merge into a re-exported interface. The fix is
+  `src/types/vitest-matchers.d.ts`, which augments the empty
+  `interface Matchers<T>` that `@vitest/expect` exposes for exactly this
+  purpose. Two placement details matter and both cost a debugging cycle: the
+  file must live outside `src/test` (excluded by `tsconfig.app.json`), and
+  `@vitest/expect` must be a direct devDependency or the specifier fails to
+  resolve and the augmentation silently declares a *new* ambient module.
+
+### Added
+- Tests for the previously untested core: `compression` (share-URL round trip,
+  malformed input, oversized diagrams), `customThemes` (persistence, corrupt
+  storage, quota failure), `i18n` (key-set parity across all six languages, no
+  blank strings, no untranslated blocks), `ExampleSelector`, `ImportConfig`
+  (including that hostile pasted CSS is sanitized before reaching the app),
+  `ExportConfig`, `DarkModeContext`, and the SVG/library download paths.
+- **260 tests, up from 175.** `src/utils` coverage is 93%, `src/contexts` 82%.
+  Overall is 25%, held down by `Preview.tsx` (1704 lines), `AnnotationLayer`
+  (934) and `Layout` (549) — canvas- and DOM-heavy components where jsdom tests
+  would cost far more than they would catch. That is a deliberate stopping
+  point, not an oversight.
+
 ## [0.4.0] - 2026-08-16
 
 ### Added

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { buildStandaloneSvg, svgFilename } from './svgExport';
 
 function makeSvg(attrs: Record<string, string>, inner = '<rect width="10" height="10"/>'): SVGSVGElement {
@@ -78,5 +78,63 @@ describe('buildStandaloneSvg', () => {
 describe('svgFilename', () => {
   it('uses the svg extension and the shared diagram prefix', () => {
     expect(svgFilename(1700000000000)).toBe('mermaid-diagram-1700000000000.svg');
+  });
+});
+
+describe('downloadSvg', () => {
+  it('offers the file as an image/svg+xml blob and revokes the URL', async () => {
+    const { downloadSvg } = await import('./svgExport');
+    const created: Blob[] = [];
+    const revoked: string[] = [];
+    const clicked: HTMLAnchorElement[] = [];
+
+    vi.useFakeTimers();
+    const createURL = vi.spyOn(URL, 'createObjectURL').mockImplementation((b) => {
+      created.push(b as Blob);
+      return 'blob:stub';
+    });
+    const revokeURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation((u) => void revoked.push(u));
+    const realCreate = document.createElement.bind(document);
+    vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+      const el = realCreate(tag);
+      if (tag === 'a') {
+        (el as HTMLAnchorElement).click = () => void clicked.push(el as HTMLAnchorElement);
+      }
+      return el;
+    });
+
+    downloadSvg('<svg/>', 'diagram.svg');
+
+    expect(created).toHaveLength(1);
+    expect(created[0].type).toBe('image/svg+xml;charset=utf-8');
+    expect(clicked[0].download).toBe('diagram.svg');
+    expect(clicked[0].href).toContain('blob:stub');
+
+    // The URL must survive the click and be released afterwards.
+    expect(revoked).toEqual([]);
+    vi.runAllTimers();
+    expect(revoked).toEqual(['blob:stub']);
+
+    createURL.mockRestore();
+    revokeURL.mockRestore();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it('defaults the filename when none is given', async () => {
+    const { downloadSvg } = await import('./svgExport');
+    let name = '';
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:stub');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const realCreate = document.createElement.bind(document);
+    vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+      const el = realCreate(tag);
+      if (tag === 'a') (el as HTMLAnchorElement).click = () => { name = (el as HTMLAnchorElement).download; };
+      return el;
+    });
+
+    downloadSvg('<svg/>');
+    expect(name).toMatch(/^mermaid-diagram-\d+\.svg$/);
+    vi.restoreAllMocks();
   });
 });
