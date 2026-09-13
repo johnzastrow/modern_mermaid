@@ -22,6 +22,42 @@ export function persistSavedThemes(themes: SavedThemes): void {
   } catch {
     // Storage may be full or unavailable; saving is best-effort.
   }
+  // Best-effort mirror to the server so the library persists across sessions and
+  // is shared across machines. localStorage above stays the fast, offline cache.
+  void pushServerThemes(themes);
+}
+
+/**
+ * Optional server-side theme store (see server/themes-server.mjs). Same-origin
+ * `/api/themes`, which the frontend nginx proxies to the backend. Every call is
+ * best-effort and degrades fully: if the endpoint is absent or down, the app
+ * keeps working from localStorage alone.
+ */
+const SERVER_ENDPOINT = '/api/themes';
+
+/** Fetch the shared library from the server. Returns null if unavailable. */
+export async function fetchServerThemes(): Promise<SavedThemes | null> {
+  try {
+    const res = await fetch(SERVER_ENDPOINT, { headers: { Accept: 'application/json' } });
+    if (!res.ok) return null;
+    const data: unknown = await res.json();
+    return data && typeof data === 'object' && !Array.isArray(data) ? (data as SavedThemes) : {};
+  } catch {
+    return null; // backend not present / offline — caller falls back to localStorage
+  }
+}
+
+/** Push the full library to the server. Fire-and-forget; never throws. */
+export async function pushServerThemes(themes: SavedThemes): Promise<void> {
+  try {
+    await fetch(SERVER_ENDPOINT, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(themes),
+    });
+  } catch {
+    // best-effort
+  }
 }
 
 /** A neutral, blank-slate theme to start a new design from scratch. */

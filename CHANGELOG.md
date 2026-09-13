@@ -3,6 +3,33 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-09-13
+
+### Added
+- **Server-side theme persistence.** Custom theme libraries now persist across
+  sessions and are shared across every machine, instead of living only in a
+  single browser's `localStorage`. A tiny dependency-free backend
+  (`server/themes-server.mjs`) stores the library as one JSON document on a
+  Docker volume, exposed as same-origin `GET`/`PUT /api/themes`; the frontend
+  nginx proxies `/api/*` to it.
+- Second container image `ghcr.io/johnzastrow/modern_mermaid-themes` (built and
+  pushed by the same GitHub Actions workflow) plus a `themes-data` volume in
+  both compose files. Frontend host port is now parameterized via `MM_PORT`.
+
+### Changed
+- `persistSavedThemes` now also mirrors the library to the server (best-effort),
+  and the app hydrates its library from the server on mount, merging the server
+  copy over the local one and writing the merged result back so both converge.
+
+### Notes
+- Fully degrades: if the backend is absent or unreachable the app keeps working
+  from `localStorage` exactly as before -- the nginx `/api` proxy uses a
+  variable + Docker DNS resolver so nginx starts even with no backend, and every
+  client call is wrapped to fall back silently.
+- No authentication: this is a single-user / trusted-LAN tool sitting behind the
+  reverse proxy, which is the only network boundary. The store is a single
+  shared library, written atomically (temp file + rename) and size-capped.
+
 ## [0.4.2] - 2026-08-16
 
 ### Added

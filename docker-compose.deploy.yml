@@ -1,11 +1,14 @@
-# Pull-based deployment: runs the prebuilt image from GHCR (no local build).
-# Usage on a server:  docker compose -f docker-compose.deploy.yml up -d
+# Pull-based deployment: runs the prebuilt images from GHCR (no local build).
+#   docker compose -f docker-compose.deploy.yml up -d
+# Host port is parameterized (MM_PORT=6080 on wharf, behind Caddy).
 services:
   modern-mermaid:
     image: ghcr.io/johnzastrow/modern_mermaid:latest
     container_name: modern-mermaid
     ports:
-      - "8080:8080"
+      - "${MM_PORT:-8080}:8080"
+    depends_on:
+      - themes-backend
     restart: unless-stopped
     pull_policy: always
     security_opt:
@@ -17,3 +20,23 @@ services:
       interval: 30s
       timeout: 3s
       retries: 3
+
+  themes-backend:
+    image: ghcr.io/johnzastrow/modern_mermaid-themes:latest
+    container_name: modern-mermaid-themes
+    restart: unless-stopped
+    pull_policy: always
+    volumes:
+      - themes-data:/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8090/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  themes-data:

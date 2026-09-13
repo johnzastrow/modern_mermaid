@@ -1,3 +1,7 @@
+# Local/self-hosted build. Builds both the frontend (nginx) and the tiny theme
+# persistence backend from source, and wires a named volume for the theme store.
+#   docker compose up -d --build
+# Host port is parameterized so the same file runs on wharf (MM_PORT=6080).
 services:
   modern-mermaid:
     build:
@@ -5,7 +9,9 @@ services:
     image: modern-mermaid:local
     container_name: modern-mermaid
     ports:
-      - "8080:8080"
+      - "${MM_PORT:-8080}:8080"
+    depends_on:
+      - themes-backend
     restart: unless-stopped
     # --- Runtime hardening ---
     security_opt:
@@ -17,3 +23,24 @@ services:
       interval: 30s
       timeout: 3s
       retries: 3
+
+  themes-backend:
+    build:
+      context: ./server
+    image: modern-mermaid-themes:local
+    container_name: modern-mermaid-themes
+    restart: unless-stopped
+    volumes:
+      - themes-data:/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8090/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  themes-data:

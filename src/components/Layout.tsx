@@ -11,7 +11,7 @@ import Toast from './Toast';
 import { themes } from '../utils/themes';
 import type { ThemeType, ThemeConfig } from '../utils/themes';
 import ThemeEditor from './ThemeEditor';
-import { loadSavedThemes, persistSavedThemes, makeBlankTheme, type SavedThemes } from '../utils/customThemes';
+import { loadSavedThemes, persistSavedThemes, makeBlankTheme, fetchServerThemes, type SavedThemes } from '../utils/customThemes';
 import { buildLibraryExport, downloadLibrary, pickLibraryFile, parseLibraryFile, mergeLibrary } from '../utils/themeLibrary';
 import type { ExportableConfig } from '../utils/configExport';
 import { backgrounds, type BackgroundStyle } from '../utils/backgrounds';
@@ -321,6 +321,26 @@ const Layout: React.FC = () => {
       }
     }
   };
+
+  // Hydrate the saved-theme library from the server on mount, so custom themes
+  // persist across sessions and are shared across machines. The server library
+  // is merged with (and takes precedence over) whatever is in localStorage; the
+  // merged result is written back so both sides converge. Fully best-effort: if
+  // the backend is absent or unreachable, we keep the localStorage-only library.
+  useEffect(() => {
+    let cancelled = false;
+    fetchServerThemes().then((server) => {
+      if (cancelled || !server || Object.keys(server).length === 0) return;
+      setSavedThemes((prev) => {
+        const merged: SavedThemes = { ...prev, ...server };
+        persistSavedThemes(merged);
+        return merged;
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // 初始化：从 URL 参数加载示例、主题和分享内容
   useEffect(() => {
