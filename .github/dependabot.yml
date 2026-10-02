@@ -7,6 +7,15 @@ updates:
       interval: weekly
     open-pull-requests-limit: 10
     groups:
+      # vitest and @vitest/* must move in lockstep: src/types/vitest-matchers.d.ts
+      # augments @vitest/expect, a direct devDependency, and a version split
+      # installs two copies so the augmentation misses the one vitest uses
+      # (tsc then fails on every jest-dom matcher). Listed first so it wins
+      # over the catch-all group, and covers majors too.
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
       # Collapse routine minor/patch bumps into a single PR to cut noise;
       # major bumps still arrive as individual, reviewable PRs.
       minor-and-patch:
