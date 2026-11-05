@@ -11,6 +11,7 @@ import {
   writeArrowScale,
 } from '../utils/managedCss';
 import { useLanguage } from '../contexts/LanguageContext';
+import SharedLibrarySettings from './SharedLibrarySettings';
 
 interface ThemeEditorProps {
   /** The theme currently being edited (a mutable custom copy). */
@@ -255,6 +256,8 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({
             </>
           )}
         </div>
+
+        <SharedLibrarySettings />
 
         <p className="text-[11px] text-gray-400 dark:text-gray-500 pt-1">
           {t.themeEditorHint || 'Edits preview live. Save to keep it; use Config to export for your docs. Stock themes are never modified.'}

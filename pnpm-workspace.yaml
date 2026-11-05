@@ -9,11 +9,16 @@ onlyBuiltDependencies:
 overrides:
   # ajv depends on "fast-uri": "^3.0.1". The maintained 3.x line sits behind the
   # "three" dist-tag because "latest" now points at 4.x, so plain resolution stops
-  # at 3.1.0 and never picks up the patched 3.1.5 — this is exactly why Dependabot
+  # at 3.1.0 and never picks up the patched releases — this is exactly why Dependabot
   # reported security_update_not_possible. Staying on 3.x keeps ajv's range satisfied.
-  fast-uri: ^3.1.5
+  # 3.1.9 fixes the 2026 host-confusion and SSRF advisories.
+  fast-uri: ^3.1.9
   # vite-plugin-pwa declares workbox-build/workbox-window ^7.4.1, but the lockfile
   # had drifted to 7.4.0 in violation of that range. 7.4.0 carries a legacy build
   # subtree (rollup@2, lodash, ejs/jake, serialize-javascript@6) that 7.4.1 drops.
   workbox-build: ^7.4.1
   workbox-window: ^7.4.1
+  # Build-time only (vite-plugin-pwa -> workbox-build). Each stays inside the range
+  # its parent declares; they only lift the floor to the patched release.
+  brace-expansion@2: ^2.1.7
+  serialize-javascript: ^7.1.3

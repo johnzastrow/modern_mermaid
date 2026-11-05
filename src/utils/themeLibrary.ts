@@ -19,8 +19,8 @@ import { sanitizeThemeCSS } from './configImport';
 export const LIBRARY_KIND = 'modern-mermaid-theme-library';
 export const LIBRARY_VERSION = 1;
 
-/** Reject absurdly large files outright (defense in depth). */
-const MAX_FILE = 2_000_000;
+/** Reject absurdly large files outright (defense in depth). Matches the server's MAX_BODY. */
+const MAX_FILE = 4_000_000;
 /** A library file with more entries than this is treated as hostile. */
 const MAX_THEMES = 500;
 

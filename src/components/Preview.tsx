@@ -35,9 +35,11 @@ export interface PreviewHandle {
 }
 
 // Initialize globally once
+// securityLevel is pinned to 'strict' here and in the per-render initialize
+// below: it disables click handlers and runs the SVG through DOMPurify.
 mermaid.initialize({
   startOnLoad: false,
-  securityLevel: 'loose',
+  securityLevel: 'strict',
   suppressErrorRendering: true, // 隐藏错误渲染到 DOM
 });
 
@@ -1198,6 +1200,8 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
             startOnLoad: false,
             suppressErrorRendering: true,
             ...configWithFont,
+            // Last, so no theme config can relax it.
+            securityLevel: 'strict',
         });
 
         const { svg: renderedSvg } = await mermaid.render(id, code);

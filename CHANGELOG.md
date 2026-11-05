@@ -3,6 +3,75 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-11-05
+
+First formal release, hardened for running on the internet. The version jumps
+from 0.5.0 to 1.2.0 because the repository already carries `v1.0.0` and `v1.1.0`
+tags from July 2026; continuing above them keeps release and image tags in order.
+
+### Security
+- **Theme library writes are off by default.** `PUT /api/themes` previously
+  accepted writes from anyone who could reach the app. The backend now refuses
+  writes unless the operator sets an owner write token (`THEMES_WRITE_TOKEN`,
+  at least 32 characters, compared in constant time) or, for a LAN instance
+  behind an allowlist, `THEMES_ALLOW_ANON_WRITE=true`. Authorization is checked
+  before the body is read; bodies must be JSON objects of at most 500 themes.
+- **Themes fetched from the server are sanitized.** They now pass through the
+  same allowlist-and-sanitize path as imported theme files, and so do themes
+  read back from localStorage (which older versions filled with unsanitized
+  server data).
+- Concurrent writes are serialized and each uses its own temp file, so the store
+  can no longer be corrupted by overlapping saves.
+- **No more silent overwrites of the shared library.** Reads carry an ETag and
+  writes send `If-Match`, so a browser holding an old copy gets `412` instead of
+  replacing newer data. A browser that could not fetch the library this session
+  (backend restarting, rate limited) never writes. Rapid saves are coalesced into
+  one write, failures show a message, and the server keeps the previous version
+  as `themes.json.bak`.
+- The theme CSS sanitizer now resolves CSS escapes and comments before matching
+  (`\75 rl(` and `@\69mport` previously slipped past it) and removes `<`.
+- Mermaid's `securityLevel: 'strict'` is now set explicitly on every render.
+- The owner token must also contain at least 10 distinct characters.
+- nginx: per-client rate limits on static files, API reads and API writes, and a
+  per-client connection cap;
+  method allowlists; request size and timeout bounds; `server_tokens off`;
+  `Cross-Origin-Opener-Policy` and `Cross-Origin-Resource-Policy` headers.
+- Containers: read-only root filesystems, memory, CPU and process limits, log
+  rotation, and publication on `127.0.0.1` by default (`MM_BIND`).
+- Base images pinned by digest; nginx moved from the unsupported 1.27 line to
+  stable 1.30. Dependabot now also watches `server/Dockerfile`.
+- Dependencies updated: the production audit goes from 13 advisories (1
+  critical, 2 high in DOMPurify via mermaid) to 1 low. Remaining accepted
+  advisories are listed in SECURITY.md.
+- CI and release pipeline: all actions pinned to commit SHAs; Trivy image scans;
+  a compose smoke test. Images are pushed by digest, scanned, signed with cosign
+  and attested (SBOM, SLSA provenance) before any tag is applied, so a failed
+  scan never leaves a tagged image. Release tags must point at a commit on
+  `main`.
+
+### Added
+- `GET /api/themes/status` reports whether this browser may write, so public
+  visitors never send writes or see an auth prompt.
+- "Shared library" control in the theme editor for entering or forgetting the
+  owner write token.
+- Release workflow: tag `vX.Y.Z` to publish images tagged `X.Y.Z`, `X.Y` and
+  `latest`, plus a GitHub Release with the static build zip, source archive,
+  SBOMs, `SHA256SUMS` and build provenance.
+- `docs/DEPLOYMENT.md`: internet-facing and LAN deployment, verification,
+  upgrades and backups. Backend tests (`server/themes-server.test.mjs`).
+
+### Changed
+- Pushes to `main` now publish `edge` and `sha-<short>` images; `latest` moves
+  only on a release. `docker-compose.deploy.yml` pins a release (`MM_VERSION`)
+  instead of following `latest`.
+
+### Upgrade notes
+- **Writes to the shared theme library stop working until you configure them.**
+  Set `THEMES_WRITE_TOKEN` (and enter it in the theme editor), or
+  `THEMES_ALLOW_ANON_WRITE=true` on a LAN-only instance.
+- The app is published on `127.0.0.1` by default. If clients connect to the
+  container port directly rather than through a reverse proxy, set `MM_BIND`.
+
 ## [0.5.0] - 2026-09-13
 
 ### Added

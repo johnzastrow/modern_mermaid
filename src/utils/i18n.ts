@@ -133,6 +133,16 @@ export interface Translation {
   themeSaved?: string;
   savedThemesLabel?: string;
   exportLibrary?: string;
+  sharedLibrary?: string;
+  sharedLibraryChecking?: string;
+  sharedLibraryWritable?: string;
+  sharedLibraryReadOnly?: string;
+  sharedLibraryConflict?: string;
+  sharedLibrarySaveFailed?: string;
+  writeTokenPlaceholder?: string;
+  writeTokenSet?: string;
+  forget?: string;
+  save?: string;
   exportLibraryEmpty?: string;
   importLibrary?: string;
   themeLibraryImportFailed?: string;

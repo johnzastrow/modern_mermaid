@@ -71,7 +71,7 @@ describe('rejecting bad input', () => {
   });
 
   it('refuses an absurdly large file', () => {
-    expect(parseLibraryFile('{"a":"' + 'x'.repeat(2_000_001) + '"}')).toBeNull();
+    expect(parseLibraryFile('{"a":"' + 'x'.repeat(4_000_001) + '"}')).toBeNull();
   });
 });
 
