@@ -4,6 +4,13 @@
 FROM node:24-alpine@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85 AS runtime
 WORKDIR /app
 COPY themes-server.mjs ./
+# Apply Alpine security fixes published after the pinned base was built, and
+# remove the bundled package managers: the server has no dependencies, so
+# npm, npx, corepack and yarn are unused attack surface (and scanner noise).
+RUN apk upgrade --no-cache \
+ && rm -rf /usr/local/lib/node_modules /opt/yarn-* \
+      /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+      /usr/local/bin/yarn /usr/local/bin/yarnpkg
 # /data holds the single themes.json document; a volume is mounted here at runtime.
 # Pre-create it owned by the unprivileged `node` user so writes succeed as non-root.
 RUN mkdir -p /data && chown -R node:node /data

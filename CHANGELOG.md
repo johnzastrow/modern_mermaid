@@ -10,6 +10,9 @@ from 0.5.0 to 1.2.0 because the repository already carries `v1.0.0` and `v1.1.0`
 tags from July 2026; continuing above them keeps release and image tags in order.
 
 ### Security
+- Both images apply Alpine security updates at build time, so fixes published
+  after the pinned base was built are included. The theme backend image no
+  longer ships npm, npx, corepack or yarn, which it never used.
 - **Theme library writes are off by default.** `PUT /api/themes` previously
   accepted writes from anyone who could reach the app. The backend now refuses
   writes unless the operator sets an owner write token (`THEMES_WRITE_TOKEN`,
