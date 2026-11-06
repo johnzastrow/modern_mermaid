@@ -16,6 +16,24 @@ All notable changes to this project are documented here. This project adheres to
   everyone else. 12.x is a separate download, fetched only when selected, and
   is kept out of the offline (service worker) cache.
 
+### Fixed
+- **Fonts are self-hosted.** The app loaded fonts from Google Fonts and from a
+  third-party host (`quick.go-admin.cn`, inherited from upstream). The CSP
+  blocked both, so diagrams silently fell back to system fonts.
+  - Inter, JetBrains Mono, Caveat, Patrick Hand, Nunito and Open Sans now come
+    from `@fontsource` packages, bundled with the app.
+  - Excalifont and Xiaolai (the Hand Drawn theme) are bundled from Excalidraw
+    0.18.1 with their unicode ranges, so a browser fetches only the slices a
+    diagram needs. They load only when a diagram uses them, and are kept out of
+    the offline cache until first use. Xiaolai previously pointed at 6 of its
+    205 slices, so most Chinese characters fell back to another font.
+  - Noto Sans SC and Noto Serif SC map to the CJK fonts installed on the
+    visitor's system instead of a 160 MB download.
+  - Unused families (VT323, Ma Shan Zheng, Kalam) are no longer referenced.
+  - Font licenses (SIL OFL 1.1) are in `public/fonts/`.
+- The preview toolbar no longer covers the zoom controls or spills into the
+  editor in narrow preview panes; it wraps onto a second row instead.
+
 ### Notes
 - Mermaid 12 changes how existing diagrams look: ELK becomes the default
   layout and the `neo` look the default appearance. See the

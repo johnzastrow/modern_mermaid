@@ -80,7 +80,11 @@ export default defineConfig(({ mode }) => {
         workbox: {
           manifestTransforms: [
             async (entries) => ({
-              manifest: entries.filter((e) => !optionalChunks.has(e.url.replace(/^\//, ''))),
+              // Also skip the hand-drawn @font-face sheet: it loads on demand and is
+              // cached at runtime on first use, like the font files it points to.
+              manifest: entries.filter(
+                (e) => !optionalChunks.has(e.url.replace(/^\//, '')) && !/fonts-handdrawn-[\w-]+\.css$/.test(e.url),
+              ),
               warnings: [],
             }),
           ],
@@ -106,6 +110,9 @@ export default defineConfig(({ mode }) => {
       }),
     ].filter(Boolean),
     build: {
+      // Never inline fonts as data: URIs; otherwise small @fontsource slices
+      // (including unused legacy .woff copies) bloat the main stylesheet.
+      assetsInlineLimit: (file: string) => (/\.woff2?$/.test(file) ? false : undefined),
       outDir: isExtension ? 'dist-extension' : 'dist',
       sourcemap: isExtension,
       rollupOptions: isExtension ? {
