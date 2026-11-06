@@ -1,23 +1,46 @@
 # Local/self-hosted build. Builds both the frontend (nginx) and the tiny theme
 # persistence backend from source, and wires a named volume for the theme store.
 #   docker compose up -d --build
-# Host port is parameterized so the same file runs on wharf (MM_PORT=6080).
+#
+# Settings (environment or a .env file beside this one):
+#   MM_BIND   host address to publish on. Default 127.0.0.1: only a reverse proxy
+#             on this host can connect. Set 0.0.0.0 only on a trusted network.
+#   MM_PORT   host port (default 8080; 6080 on wharf).
+#   THEMES_WRITE_TOKEN       owner write token (>= 32 chars) for the shared theme
+#                            library. Required for writes on an internet-facing instance.
+#   THEMES_ALLOW_ANON_WRITE  "true" lets anyone who can reach /api write. LAN
+#                            instances behind an IP allowlist only.
+# With neither write setting, the shared library is read-only. See docs/DEPLOYMENT.md.
+x-hardening: &hardening
+  restart: unless-stopped
+  read_only: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  pids_limit: 100
+  logging:
+    driver: local
+    options:
+      max-size: 10m
+      max-file: "3"
+
 services:
   modern-mermaid:
+    <<: *hardening
     build:
       context: .
     image: modern-mermaid:local
     container_name: modern-mermaid
     ports:
-      - "${MM_PORT:-8080}:8080"
+      - "${MM_BIND:-127.0.0.1}:${MM_PORT:-8080}:8080"
     depends_on:
       - themes-backend
-    restart: unless-stopped
-    # --- Runtime hardening ---
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    # nginx-unprivileged keeps its pid file and temp paths under /tmp.
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    mem_limit: 128m
+    cpus: 1.0
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/"]
       interval: 30s
@@ -25,17 +48,20 @@ services:
       retries: 3
 
   themes-backend:
+    <<: *hardening
     build:
       context: ./server
     image: modern-mermaid-themes:local
     container_name: modern-mermaid-themes
-    restart: unless-stopped
+    environment:
+      THEMES_WRITE_TOKEN: ${THEMES_WRITE_TOKEN:-}
+      THEMES_ALLOW_ANON_WRITE: ${THEMES_ALLOW_ANON_WRITE:-false}
     volumes:
       - themes-data:/data
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+    mem_limit: 192m
+    cpus: 0.5
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8090/healthz"]
       interval: 30s

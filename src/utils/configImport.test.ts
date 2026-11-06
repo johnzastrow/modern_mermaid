@@ -38,6 +38,31 @@ describe('round-trip: frontmatter', () => {
 });
 
 describe('security: sanitizeThemeCSS', () => {
+  it('sees through CSS escapes and comments', () => {
+    const cases = [
+      '.a{background:\\75rl(https://evil.example/x)}',
+      '.a{background:u\\72l(https://evil.example/x)}',
+      '@\\69mport url(https://evil.example/x.css);',
+      '@\\import url(https://evil.example/x.css);',
+      '.a{background:url(\\64ata:image/svg+xml,x)}',
+      '.a{background:url(java\\73 cript:alert(1))}',
+      '@im/**/port url(https://evil.example/x.css);',
+    ];
+    for (const css of cases) {
+      const clean = sanitizeThemeCSS(css);
+      expect(clean).not.toMatch(/evil\.example|@import|data:|javascript:/i);
+    }
+  });
+
+  it('cannot be made to close the style element', () => {
+    expect(sanitizeThemeCSS('.a{} \\3c /style\\3e <script>x</script>')).not.toContain('<');
+  });
+
+  it('leaves ordinary theme CSS intact', () => {
+    const css = '.node rect { rx: 6px; } .edgePath > path { stroke-width: 2px; }';
+    expect(sanitizeThemeCSS(css)).toBe(css);
+  });
+
   it('strips @import, external url() and expression()', () => {
     const dirty = '@import url(http://evil.test/x.css); .n { background: url("https://evil.test/p") ; width: expression(alert(1)); }';
     const clean = sanitizeThemeCSS(dirty);

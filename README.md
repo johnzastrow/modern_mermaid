@@ -103,63 +103,35 @@ pnpm test       # Vitest
 
 ## 🐳 Self-Hosting (Docker)
 
-The app ships as a hardened static site: a multi-stage build served by a
-**non-root** `nginx-unprivileged` container on port **8080**, with a strict
-Content-Security-Policy and security headers. It has no backend and needs no
-configuration.
+The app ships as two hardened containers: the static site on a **non-root**
+`nginx-unprivileged` (port **8080**) with a strict Content-Security-Policy and
+rate limits, and a tiny theme-library backend. Both run read-only, with all
+capabilities dropped and memory and process limits. Release images are signed
+with cosign and carry SBOM and provenance attestations.
 
-### Option A — pull the prebuilt image (recommended)
-
-Every push to `main` publishes an image to the GitHub Container Registry, so a
-server just needs to pull and run it:
+### Option A: run a released image (recommended)
 
 ```bash
-docker run -d --name modern-mermaid -p 8080:8080 --restart unless-stopped \
-  ghcr.io/johnzastrow/modern_mermaid:latest
+curl -fsSLO https://raw.githubusercontent.com/johnzastrow/modern_mermaid/v1.2.0/docker-compose.deploy.yml
+MM_VERSION=1.2.0 docker compose -f docker-compose.deploy.yml up -d
 ```
 
-Or, with Compose (`docker-compose.deploy.yml` is in the repo):
+The app listens on `127.0.0.1:8080`; put a TLS reverse proxy (Caddy, Traefik,
+nginx) in front of it. The shared theme library is **read-only** until you set
+an owner write token (`THEMES_WRITE_TOKEN`); visitors' own themes always stay in
+their browser.
 
-```yaml
-# docker-compose.deploy.yml
-services:
-  modern-mermaid:
-    image: ghcr.io/johnzastrow/modern_mermaid:latest
-    container_name: modern-mermaid
-    ports:
-      - "8080:8080"
-    restart: unless-stopped
-    pull_policy: always
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-```
-
-```bash
-docker compose -f docker-compose.deploy.yml up -d
-```
-
-Then browse to `http://<host>:8080`. To update: `docker compose -f docker-compose.deploy.yml pull && docker compose -f docker-compose.deploy.yml up -d`.
-
-> The GHCR package inherits the repository's visibility. For a public repo it is
-> pullable without auth; for a private repo run `docker login ghcr.io` first.
-
-### Option B — build from source
-
-`docker-compose.yml` builds the image locally from the `Dockerfile`:
+### Option B: build from source
 
 ```bash
 docker compose up -d --build
 ```
 
-Put it behind your existing reverse proxy (Caddy/Traefik/nginx) for TLS; the
-container serves plain HTTP on 8080 by design.
+Or serve the static `modern-mermaid-<version>-dist.zip` from any release with
+any web server (no theme backend).
+
+See **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** for internet-facing setup, the
+write token, a Caddy example, image verification, and upgrades.
 
 ---
 

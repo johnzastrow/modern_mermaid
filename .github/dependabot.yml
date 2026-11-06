@@ -31,8 +31,10 @@ updates:
     schedule:
       interval: weekly
 
-  # Base images referenced by the Dockerfile
+  # Base images (pinned by digest) in both Dockerfiles
   - package-ecosystem: docker
-    directory: "/"
+    directories:
+      - "/"
+      - "/server"
     schedule:
       interval: weekly

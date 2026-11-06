@@ -11,7 +11,7 @@ import Toast from './Toast';
 import { themes } from '../utils/themes';
 import type { ThemeType, ThemeConfig } from '../utils/themes';
 import ThemeEditor from './ThemeEditor';
-import { loadSavedThemes, persistSavedThemes, makeBlankTheme, fetchServerThemes, type SavedThemes } from '../utils/customThemes';
+import { loadSavedThemes, persistSavedThemes, makeBlankTheme, fetchServerThemes, setServerSyncListener, type SavedThemes } from '../utils/customThemes';
 import { buildLibraryExport, downloadLibrary, pickLibraryFile, parseLibraryFile, mergeLibrary } from '../utils/themeLibrary';
 import type { ExportableConfig } from '../utils/configExport';
 import { backgrounds, type BackgroundStyle } from '../utils/backgrounds';
@@ -331,16 +331,31 @@ const Layout: React.FC = () => {
     let cancelled = false;
     fetchServerThemes().then((server) => {
       if (cancelled || !server || Object.keys(server).length === 0) return;
-      setSavedThemes((prev) => {
-        const merged: SavedThemes = { ...prev, ...server };
-        persistSavedThemes(merged);
-        return merged;
-      });
+      // Merge outside the state updater: updaters must stay pure (StrictMode
+      // runs them twice), and persisting is a side effect.
+      const merged: SavedThemes = { ...loadSavedThemes(), ...server };
+      setSavedThemes(merged);
+      persistSavedThemes(merged);
     });
     return () => {
       cancelled = true;
     };
   }, []);
+
+  // Tell the owner when a save did not reach the shared library, so a silent
+  // failure cannot leave the server copy stale.
+  useEffect(() => {
+    setServerSyncListener((result) => {
+      if (result === 'saved') return;
+      setToastMessage(
+        result === 'conflict'
+          ? (t.sharedLibraryConflict || 'The shared library changed elsewhere. Reload to merge before saving again.')
+          : (t.sharedLibrarySaveFailed || 'Could not save to the shared library. Your themes are still saved in this browser.'),
+      );
+      setShowToast(true);
+    });
+    return () => setServerSyncListener(null);
+  }, [t]);
 
   // 初始化：从 URL 参数加载示例、主题和分享内容
   useEffect(() => {

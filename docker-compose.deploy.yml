@@ -1,20 +1,46 @@
-# Pull-based deployment: runs the prebuilt images from GHCR (no local build).
+# Pull-based deployment: runs the prebuilt, signed images from GHCR (no local build).
 #   docker compose -f docker-compose.deploy.yml up -d
-# Host port is parameterized (MM_PORT=6080 on wharf, behind Caddy).
+#
+# Pin a release with MM_VERSION (default below). Avoid "latest" in production:
+# it changes on every push to main. Verify the image signature first; see
+# docs/DEPLOYMENT.md ("Verify the images").
+#
+# Settings (environment or a .env file beside this one, mode 600):
+#   MM_VERSION  release to run, e.g. 1.2.0
+#   MM_BIND     host address to publish on. Default 127.0.0.1: only a reverse proxy
+#               on this host can connect. Set 0.0.0.0 only on a trusted network.
+#   MM_PORT     host port (default 8080; 6080 on wharf).
+#   THEMES_WRITE_TOKEN       owner write token (>= 32 chars). Internet-facing instances.
+#   THEMES_ALLOW_ANON_WRITE  "true" for a LAN instance behind an IP allowlist only.
+# With neither write setting, the shared theme library is read-only.
+x-hardening: &hardening
+  restart: unless-stopped
+  read_only: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  pids_limit: 100
+  logging:
+    driver: local
+    options:
+      max-size: 10m
+      max-file: "3"
+
 services:
   modern-mermaid:
-    image: ghcr.io/johnzastrow/modern_mermaid:latest
+    <<: *hardening
+    image: ghcr.io/johnzastrow/modern_mermaid:${MM_VERSION:-1.2.0}
     container_name: modern-mermaid
     ports:
-      - "${MM_PORT:-8080}:8080"
+      - "${MM_BIND:-127.0.0.1}:${MM_PORT:-8080}:8080"
     depends_on:
       - themes-backend
-    restart: unless-stopped
-    pull_policy: always
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    # nginx-unprivileged keeps its pid file and temp paths under /tmp.
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    mem_limit: 128m
+    cpus: 1.0
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/"]
       interval: 30s
@@ -22,16 +48,18 @@ services:
       retries: 3
 
   themes-backend:
-    image: ghcr.io/johnzastrow/modern_mermaid-themes:latest
+    <<: *hardening
+    image: ghcr.io/johnzastrow/modern_mermaid-themes:${MM_VERSION:-1.2.0}
     container_name: modern-mermaid-themes
-    restart: unless-stopped
-    pull_policy: always
+    environment:
+      THEMES_WRITE_TOKEN: ${THEMES_WRITE_TOKEN:-}
+      THEMES_ALLOW_ANON_WRITE: ${THEMES_ALLOW_ANON_WRITE:-false}
     volumes:
       - themes-data:/data
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+    mem_limit: 192m
+    cpus: 0.5
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8090/healthz"]
       interval: 30s

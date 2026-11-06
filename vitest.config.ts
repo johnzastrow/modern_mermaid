@@ -9,7 +9,8 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     // Vitest's default glob would also match the Playwright specs in e2e/,
     // which import @playwright/test and cannot run under this runner.
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    // server/ holds the theme backend's tests; they opt into the node environment.
+    include: ['src/**/*.{test,spec}.{ts,tsx}', 'server/**/*.test.mjs'],
     coverage: {
       provider: 'v8',
       // Report on every source file, not only the ones a test happened to
