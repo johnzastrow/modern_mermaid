@@ -501,7 +501,10 @@ const Layout: React.FC = () => {
           className="bg-gray-50 dark:bg-gray-900 flex flex-col relative flex-1"
           style={{ width: isFullscreen ? '100%' : `${100 - leftPanelWidth}%` }}
         >
-           <div className="absolute top-4 right-4 z-10 flex items-start gap-2">
+           {/* Spans from the zoom controls (left-4, 40px wide) to the right edge, so a
+               narrow pane wraps the toolbar instead of covering them. The strip itself
+               ignores the pointer so the diagram underneath can still be dragged. */}
+           <div className="absolute top-4 right-4 left-16 z-10 flex justify-end items-start gap-2 pointer-events-none">
               <Toolbar
                 currentTheme={currentTheme}
                 activeThemeConfig={activeThemeConfig}

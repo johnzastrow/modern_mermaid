@@ -1,61 +1,24 @@
-/* Custom Hand-drawn Fonts */
-
-/* Excalifont - Hand-drawn English font from Excalidraw */
+/* Fonts are self-hosted: the CSP allows only same-origin fonts (font-src 'self'),
+ * and no visitor request goes to a third-party font service.
+ *
+ * Latin families come from @fontsource packages (imported in main.tsx).
+ * The hand-drawn Excalifont and Xiaolai faces are in fonts-handdrawn.css and
+ * load only when a diagram uses them (utils/handDrawnFonts.ts).
+ *
+ * Noto Sans SC / Noto Serif SC are not bundled (about 160 MB of files). These
+ * aliases map the names used by themes and font options to the CJK fonts
+ * already installed on the visitor's system. */
 @font-face {
-  font-family: 'Excalifont';
-  src: url('https://quick.go-admin.cn/ai/mordern_mermaid/fonts/Excalifont-Regular-a88b72a24fb54c9f94e3b5fdaa7481c9.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
+  font-family: 'Noto Sans SC';
+  src: local('Noto Sans SC'), local('NotoSansSC-Regular'), local('Noto Sans CJK SC'),
+    local('NotoSansCJKsc-Regular'), local('PingFang SC'), local('PingFangSC-Regular'),
+    local('Microsoft YaHei'), local('Source Han Sans SC');
   font-display: swap;
 }
-
-/* Xiaolai - Hand-drawn Chinese font (小赖字体) */
-/* 使用字体分片技术，优化加载性能 */
 @font-face {
-  font-family: 'Xiaolai';
-  src: url('https://quick.go-admin.cn/ai/mordern_mermaid/fonts/Xiaolai-Regular-0facdf1ea213ba40261022f5d5ed4493.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
+  font-family: 'Noto Serif SC';
+  src: local('Noto Serif SC'), local('NotoSerifSC-Regular'), local('Noto Serif CJK SC'),
+    local('NotoSerifCJKsc-Regular'), local('Songti SC'), local('STSong'), local('SimSun'),
+    local('Source Han Serif SC');
   font-display: swap;
 }
-
-@font-face {
-  font-family: 'Xiaolai';
-  src: url('https://quick.go-admin.cn/ai/mordern_mermaid/fonts/Xiaolai-Regular-353f33792a8f60dc69323ddf635a269e.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Xiaolai';
-  src: url('https://quick.go-admin.cn/ai/mordern_mermaid/fonts/Xiaolai-Regular-f8ee5d36068a42b51d0e4a1116cfcec1.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Xiaolai';
-  src: url('https://quick.go-admin.cn/ai/mordern_mermaid/fonts/Xiaolai-Regular-79d494361ae093b69e74ee9dbe65bfd4.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Xiaolai';
-  src: url('https://quick.go-admin.cn/ai/mordern_mermaid/fonts/Xiaolai-Regular-74e2263a91439c25b91d5132ce9f4d62.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Xiaolai';
-  src: url('https://quick.go-admin.cn/ai/mordern_mermaid/fonts/Xiaolai-Regular-145aa02cdd91946e67dc934e1acffe75.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-

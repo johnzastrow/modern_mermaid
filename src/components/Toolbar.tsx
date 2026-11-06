@@ -78,7 +78,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const currentToolConfig = annotationTools.find(tool => tool.id === selectedTool) || annotationTools[0];
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center justify-end gap-2 pointer-events-auto [&_button]:whitespace-nowrap">
       {/* Theme Selector */}
       <div className="relative">
         <button
