@@ -3,7 +3,7 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.4.0] - 2026-11-06
 
 ### Added
 - **Export > SVG (Inkscape / editors).** An SVG that Inkscape and other SVG
@@ -18,6 +18,7 @@ All notable changes to this project are documented here. This project adheres to
   against the Mermaid 12 switch. Reports go to `inkscape-report/<theme>-mermaid-<major>/`.
 
 ### Changed
+- Deployment defaults and docs point at 1.4.0; 1.4.x is the supported line.
 - The standard SVG export measures diagrams that carry no size (info) and pins
   a `viewBox`, instead of leaving viewers to fall back to 300x150.
 - The SVG export code is shared: the preview's render and post-processing now
