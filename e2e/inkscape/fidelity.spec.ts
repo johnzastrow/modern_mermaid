@@ -73,9 +73,12 @@ async function coverage(png: string, threshold: number): Promise<number> {
 }
 
 /** foreignObject elements that carry visible text: labels Inkscape will not draw. */
-function htmlLabelCount(svg: string): number {
-  return (svg.match(/<foreignObject\b[\s\S]*?<\/foreignObject>/g) ?? [])
-    .filter((fo) => fo.replace(/<[^>]*>/g, '').replace(/&nbsp;|\s/g, '').length > 0).length;
+function htmlLabelCount(page: Page, svg: string): Promise<number> {
+  // Parse with the browser rather than regexes: exact, and entity-aware.
+  return page.evaluate((markup) => {
+    const doc = new DOMParser().parseFromString(markup, 'image/svg+xml');
+    return [...doc.getElementsByTagName('foreignObject')].filter((fo) => fo.textContent?.trim()).length;
+  }, svg);
 }
 
 for (const { category, id } of cases) {
@@ -135,7 +138,7 @@ for (const { category, id } of cases) {
       category, id, theme, ssim,
       coverageRatio: refCov > 0 ? inkCov / refCov : 1,
       darkRatio: refDark > 0 ? inkDark / refDark : 1,
-      htmlLabels: htmlLabelCount(svg),
+      htmlLabels: await htmlLabelCount(page, svg),
       features, warnings: warnings.slice(0, 10),
     };
     await writeFile(`${base}.json`, JSON.stringify(result, null, 2));
