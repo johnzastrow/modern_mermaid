@@ -3,6 +3,15 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- Deployment defaults now point at 1.3.0: `docker-compose.deploy.yml` falls back
+  to `MM_VERSION=1.3.0`, and the README, `docs/DEPLOYMENT.md` and `SECURITY.md`
+  use 1.3.0 in their examples, verify commands and supported-versions table.
+  1.3.0 shipped with these still at 1.2.0, so an install that did not set
+  `MM_VERSION` ran 1.2.0.
+
 ## [1.3.0] - 2026-11-05
 
 ### Added
