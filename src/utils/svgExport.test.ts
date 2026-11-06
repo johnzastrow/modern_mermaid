@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { buildStandaloneSvg, svgFilename } from './svgExport';
+import { buildStandaloneSvg, svgFilename, makeEditorSafe, parseDropShadow, withPlainLabels } from './svgExport';
 
 function makeSvg(attrs: Record<string, string>, inner = '<rect width="10" height="10"/>'): SVGSVGElement {
   const wrapper = document.createElement('div');
@@ -72,6 +72,88 @@ describe('buildStandaloneSvg', () => {
     const out = buildStandaloneSvg(makeSvg({}));
     expect(out).toContain('<svg');
     expect(out).toContain('xmlns=');
+  });
+});
+
+describe('withPlainLabels', () => {
+  it('turns HTML labels off globally and for flowcharts, keeping other settings', () => {
+    const out = withPlainLabels({ theme: 'base', flowchart: { curve: 'basis', htmlLabels: true } });
+    expect(out).toEqual({ theme: 'base', htmlLabels: false, flowchart: { curve: 'basis', htmlLabels: false } });
+  });
+});
+
+describe('parseDropShadow', () => {
+  it('reads color first or last, offsets and blur', () => {
+    expect(parseDropShadow('drop-shadow(rgb(185, 185, 185) 1px 2px 2px)')).toEqual({ color: 'rgb(185, 185, 185)', dx: 1, dy: 2, blur: 2 });
+    expect(parseDropShadow('drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.06))')).toEqual({ color: 'rgba(0, 0, 0, 0.06)', dx: 4, dy: 4, blur: 0 });
+  });
+  it('returns null without a drop shadow', () => {
+    expect(parseDropShadow('none')).toBeNull();
+    expect(parseDropShadow('blur(2px)')).toBeNull();
+  });
+});
+
+describe('makeEditorSafe', () => {
+  const live = (inner: string) => {
+    const svg = makeSvg({ viewBox: '0 0 100 50' }, inner);
+    document.body.appendChild(svg);
+    return svg;
+  };
+
+  it('resolves currentColor to a concrete color', () => {
+    const src = live('<line stroke="currentColor"/><rect fill="currentColor"/>');
+    const clone = src.cloneNode(true) as SVGSVGElement;
+    makeEditorSafe(src, clone);
+    expect(clone.innerHTML).not.toContain('currentColor');
+    src.remove();
+  });
+
+  it('keeps spaces at the edge of a tspan as non-breaking spaces', () => {
+    const src = live('<text><tspan>+int</tspan><tspan> userId</tspan></text>');
+    const clone = src.cloneNode(true) as SVGSVGElement;
+    makeEditorSafe(src, clone);
+    expect(clone.querySelectorAll('tspan')[1].textContent).toBe('\u00a0userId');
+    expect(clone.querySelectorAll('tspan')[0].textContent).toBe('+int');
+    src.remove();
+  });
+
+  it('replaces a foreignObject label with centred SVG text', () => {
+    const src = live(
+      '<foreignObject x="10" y="20" width="80" height="20"><div xmlns="http://www.w3.org/1999/xhtml"><span>Check Database</span></div></foreignObject>',
+    );
+    const clone = src.cloneNode(true) as SVGSVGElement;
+    makeEditorSafe(src, clone);
+    expect(clone.querySelector('foreignObject')).toBeNull();
+    const text = clone.querySelector('text')!;
+    expect(text.textContent).toBe('Check Database');
+    expect(text.getAttribute('x')).toBe('50');
+    expect(text.getAttribute('text-anchor')).toBe('middle');
+    src.remove();
+  });
+
+  it('turns a CSS drop-shadow into a referenced SVG filter', () => {
+    const src = live('<style>rect.s{filter:drop-shadow(rgb(0, 0, 0) 2px 3px 4px)}</style><rect class="s" width="5" height="5"/>');
+    const clone = src.cloneNode(true) as SVGSVGElement;
+    const spy = vi.spyOn(window, 'getComputedStyle').mockImplementation(
+      (el: Element) => ({ filter: el.tagName === 'rect' ? 'drop-shadow(rgb(0, 0, 0) 2px 3px 4px)' : 'none', color: '' }) as CSSStyleDeclaration,
+    );
+    makeEditorSafe(src, clone);
+    spy.mockRestore();
+    const rect = clone.querySelector('rect')!;
+    const id = rect.getAttribute('filter')!.match(/url\(#(.+)\)/)![1];
+    const filter = clone.querySelector(`filter[id="${id}"]`)!;
+    expect(filter.querySelector('feOffset')!.getAttribute('dy')).toBe('3');
+    expect(filter.querySelector('feGaussianBlur')!.getAttribute('stdDeviation')).toBe('2');
+    src.remove();
+  });
+
+  it('drops foreignObjects that show no text', () => {
+    const src = live('<foreignObject width="10" height="10"><div xmlns="http://www.w3.org/1999/xhtml"></div></foreignObject>');
+    const clone = src.cloneNode(true) as SVGSVGElement;
+    makeEditorSafe(src, clone);
+    expect(clone.querySelector('foreignObject')).toBeNull();
+    expect(clone.querySelector('text')).toBeNull();
+    src.remove();
   });
 });
 

@@ -3,6 +3,26 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **Export > SVG (Inkscape / editors).** An SVG that Inkscape and other SVG
+  editors display correctly. The diagram is re-rendered with plain SVG text
+  labels, then: leftover HTML labels (`foreignObject`) become SVG text,
+  `currentColor` becomes a concrete color (gantt grid lines), CSS drop shadows
+  become SVG 1.1 filters, spaces at the edge of text runs become non-breaking
+  (class members ran together), and unsized diagrams get a measured `viewBox`.
+  Measured with `pnpm test:inkscape` on 35 diagrams: poor results drop from 10
+  to 0 on both Mermaid 11 and Mermaid 12.
+- `pnpm test:inkscape` scores both exports, and `INKSCAPE_MERMAID=12` runs it
+  against the Mermaid 12 switch. Reports go to `inkscape-report/<theme>-mermaid-<major>/`.
+
+### Changed
+- The standard SVG export measures diagrams that carry no size (info) and pins
+  a `viewBox`, instead of leaving viewers to fall back to 300x150.
+- The SVG export code is shared: the preview's render and post-processing now
+  live in one function used by both the preview and the editor-safe export.
+
 ## [1.3.2] - 2026-11-06
 
 ### Fixed

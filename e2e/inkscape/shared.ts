@@ -2,7 +2,12 @@ import { accessSync, constants } from 'node:fs';
 import { delimiter, isAbsolute, join, resolve } from 'node:path';
 
 /** Where SVGs, renders, per-diagram JSON and the summary report are written. */
-export const REPORT_DIR = resolve(process.cwd(), 'inkscape-report');
+/** One directory per theme and Mermaid major, so runs never mix in a report. */
+export const REPORT_DIR = resolve(
+  process.cwd(),
+  'inkscape-report',
+  `${process.env.INKSCAPE_THEME ?? 'linearLight'}-mermaid-${process.env.INKSCAPE_MERMAID === '12' ? '12' : '11'}`,
+);
 
 /** Both renderers rasterize at this width (px). */
 export const RENDER_WIDTH = 1200;
@@ -14,6 +19,10 @@ export interface FidelityResult {
   category: string;
   id: string;
   theme: string;
+  /** Mermaid major the diagram was rendered with. */
+  mermaid: '11' | '12';
+  /** Which export produced the file: the standard SVG or the editor-safe one. */
+  variant: 'standard' | 'editor';
   /** Structural similarity of Inkscape's render to Chromium's; 1 is identical. */
   ssim: number;
   /** Inkscape's drawn-pixel fraction over Chromium's; well below 1 means missing content. */

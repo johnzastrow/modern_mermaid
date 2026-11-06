@@ -150,6 +150,8 @@ export interface Translation {
   svgWithBackgroundDesc?: string;
   svgTransparent?: string;
   svgTransparentDesc?: string;
+  svgEditorSafe?: string;
+  svgEditorSafeDesc?: string;
   svgExportNote?: string;
   cornerRadius?: string;
   lineWidth?: string;

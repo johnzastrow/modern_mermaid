@@ -138,6 +138,32 @@ test.describe('SVG export', () => {
     await solo.close();
   });
 
+  test('the Inkscape / editors variant uses SVG text, not HTML labels', async ({ page }) => {
+    await setCode(page, 'flowchart LR\n  Check[Check Database] --> Done');
+    await openMenu(page, /^Export$/);
+    const standard = await downloadText(page, async () => {
+      await page.getByText('SVG (vector)', { exact: true }).click();
+    });
+    await openMenu(page, /^Export$/);
+    const editor = await downloadText(page, async () => {
+      await page.getByText('SVG (Inkscape / editors)', { exact: true }).click();
+    });
+
+    // The standard export keeps Mermaid's HTML labels; editors cannot show them.
+    expect(standard.text).toContain('<foreignObject');
+    expect(editor.text).not.toContain('<foreignObject');
+    // Attributes only: a currentColor inside Mermaid's CSS is resolved fine.
+    expect(editor.text).not.toContain('="currentColor"');
+    // Labels are SVG <text>; read them through the parser, normalizing the
+    // non-breaking spaces the editor-safe export uses at tspan edges.
+    const labels = await page.evaluate((markup) => {
+      const doc = new DOMParser().parseFromString(markup, 'image/svg+xml');
+      return [...doc.querySelectorAll('text')].map((t) => (t.textContent ?? '').replace(/\u00a0/g, ' ').trim());
+    }, editor.text);
+    expect(labels).toContain('Check Database');
+    expect(labels).toContain('Done');
+  });
+
   test('raster export still downloads', async ({ page }) => {
     await setCode(page, 'flowchart LR\n  A --> B');
     await openMenu(page, /^Export$/);

@@ -4,7 +4,7 @@ import { loadMermaid } from '../utils/mermaidVersion';
 import { ensureHandDrawnFonts, usesHandDrawnFonts } from '../utils/handDrawnFonts';
 import { ensureDiagramFonts } from '../utils/diagramFonts';
 import { toPng, toJpeg } from 'html-to-image';
-import { buildStandaloneSvg, downloadSvg } from '../utils/svgExport';
+import { buildStandaloneSvg, downloadSvg, withPlainLabels } from '../utils/svgExport';
 import { ZoomIn, ZoomOut, Maximize2, Move, Target } from 'lucide-react';
 import type { ThemeConfig } from '../utils/themes';
 import type { BackgroundStyle } from '../utils/backgrounds';
@@ -31,7 +31,7 @@ interface PreviewProps {
 export interface PreviewHandle {
   exportImage: (transparent: boolean) => Promise<void>;
   /** Serialize the rendered SVG itself (true vector, no annotations). */
-  exportSvg: (transparent: boolean) => Promise<void>;
+  exportSvg: (transparent: boolean, editorSafe?: boolean) => Promise<void>;
   copyImage: (transparent: boolean) => Promise<void>;
   clearAnnotations: () => void;
   refresh: () => void;
@@ -961,12 +961,13 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
     // Vector export. Unlike exportImage this does not rasterize the preview
     // node — it serializes the SVG Mermaid produced, so annotations (an HTML
     // overlay) are not captured. The Toolbar entry says so.
-    exportSvg: async (transparent: boolean) => {
+    exportSvg: async (transparent: boolean, editorSafe = false) => {
       if (!contentRef.current || !svg) return;
 
       setExporting(true);
+      let host: HTMLDivElement | null = null;
       try {
-        const svgElement = contentRef.current.querySelector('svg');
+        let svgElement = contentRef.current.querySelector('svg') as SVGSVGElement | null;
         if (!svgElement) return;
 
         const background = transparent
@@ -974,10 +975,25 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
           : actualBgStyle?.backgroundColor ||
             getComputedStyle(containerRef.current!).backgroundColor;
 
-        downloadSvg(buildStandaloneSvg(svgElement as SVGSVGElement, { background }));
+        if (editorSafe) {
+          // Re-render with SVG text labels and lay it out off-screen, so the
+          // export step can measure labels and sizes. Not display:none or
+          // visibility:hidden: both empty innerText and getBBox.
+          const markup = await renderMarkupRef.current(true);
+          const parsed = new DOMParser().parseFromString(markup, 'text/html').querySelector('svg');
+          if (!parsed) return;
+          host = document.createElement('div');
+          host.style.cssText = 'position:fixed;left:-100000px;top:0;opacity:0;pointer-events:none';
+          host.appendChild(document.adoptNode(parsed));
+          document.body.appendChild(host);
+          svgElement = parsed;
+        }
+
+        downloadSvg(buildStandaloneSvg(svgElement, { background, editorSafe }));
       } catch (err) {
         console.error('SVG export failed', err);
       } finally {
+        host?.remove();
         setTimeout(() => setExporting(false), 300);
       }
     },
@@ -1166,6 +1182,164 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
     }
   }));
 
+  // Render `code` with the current theme, font and node colors, and apply the
+  // app's SVG post-processing. `plainLabels` asks Mermaid for SVG <text>
+  // labels instead of HTML ones, for the editor-safe (Inkscape) export.
+  const renderMarkup = async (plainLabels = false): Promise<string> => {
+      // Unique ID for each render
+      const id = `mermaid-${Date.now()}`;
+      
+      // Apply custom font if selected
+      const configWithFont = actualFont ? {
+        ...themeConfig.mermaidConfig,
+        themeVariables: {
+          ...themeConfig.mermaidConfig.themeVariables,
+          fontFamily: actualFont,
+        },
+        themeCSS: `
+          ${themeConfig.mermaidConfig.themeCSS || ''}
+          /* Custom font override */
+          * { 
+            font-family: ${actualFont} !important; 
+          }
+          .node .label, .edgeLabel, .messageText, .noteText, .labelText, .loopText, 
+          .actor text, .taskText, .sectionTitle, .titleText, text {
+            font-family: ${actualFont} !important;
+          }
+        `
+      } : themeConfig.mermaidConfig;
+
+      if (usesHandDrawnFonts(configWithFont)) await ensureHandDrawnFonts();
+      // Measure labels with the real web font, not a fallback (clipped labels otherwise).
+      await ensureDiagramFonts(configWithFont);
+
+      // The default (11.x) or, via the ?mermaid= test switch, 12.x.
+      const renderer = await loadMermaid();
+      renderer.initialize({
+          startOnLoad: false,
+          suppressErrorRendering: true,
+          ...(plainLabels ? withPlainLabels(configWithFont) : configWithFont),
+          // Last, so no theme config can relax it.
+          securityLevel: 'strict',
+      });
+
+      const { svg: renderedSvg } = await renderer.render(id, code);
+      
+      // Post-process SVG
+      let processedSvg = renderedSvg;
+
+      // 移除 width/height 的百分比值，使用 viewBox 定义的固定尺寸
+      // 这样缩放计算才能准确
+      processedSvg = processedSvg.replace(
+        /(<svg[^>]*)\s+width=["']100%["']/gi,
+        '$1'
+      ).replace(
+        /(<svg[^>]*)\s+height=["']100%["']/gi,
+        '$1'
+      );
+
+      // 如果 SVG 有 viewBox，从 viewBox 中提取尺寸并设置为 width/height
+      const viewBoxMatch = processedSvg.match(/viewBox=["']([^"']+)["']/);
+      if (viewBoxMatch) {
+        const viewBoxParts = viewBoxMatch[1].split(/\s+/).map(Number);
+        if (viewBoxParts.length === 4) {
+          const [, , width, height] = viewBoxParts;
+          // 在 svg 标签中添加明确的 width 和 height
+          processedSvg = processedSvg.replace(
+            /<svg/,
+            `<svg width="${width}" height="${height}"`
+          );
+        }
+      }
+
+      // Post-process SVG to force dash array for specific themes
+      if (themeConfig.mermaidConfig.themeVariables?.lineColor === '#ffffff' && 
+          themeConfig.bgClass === 'bg-[#1a1a1a]') {
+        // Dark Minimal theme - force dashed lines
+        processedSvg = processedSvg.replace(
+          /<path class="path"/g, 
+          '<path class="path" stroke-dasharray="10,8"'
+        );
+      }
+      
+      // Add hand-drawn filter for handDrawn theme
+      if (themeConfig.bgClass === 'bg-[#fffef9]') {
+        // Inject SVG filter definition for realistic hand-drawn effect
+        const filterDef = `<defs>
+<filter id="roughen" x="-25%" y="-25%" width="150%" height="150%" filterUnits="objectBoundingBox">
+  <feTurbulence type="fractalNoise" baseFrequency="0.04 0.04" numOctaves="3" result="noise" seed="2"/>
+  <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+  <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="2" result="noise2" seed="5"/>
+  <feDisplacementMap in="displaced" in2="noise2" scale="1" xChannelSelector="R" yChannelSelector="G"/>
+</filter>
+<filter id="roughen-line" x="-30%" y="-30%" width="160%" height="160%" filterUnits="objectBoundingBox">
+  <feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="3" result="noise" seed="1"/>
+  <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+  <feTurbulence type="fractalNoise" baseFrequency="0.02 0.02" numOctaves="2" result="noise2" seed="3"/>
+  <feDisplacementMap in="displaced" in2="noise2" scale="0.8" xChannelSelector="R" yChannelSelector="G"/>
+</filter>
+</defs>`;
+        // Find existing defs or insert new one
+        if (processedSvg.includes('<defs>')) {
+          processedSvg = processedSvg.replace(/<defs>/, filterDef);
+        } else {
+          processedSvg = processedSvg.replace(/<svg[^>]*>/, match => match + filterDef);
+        }
+      }
+      
+      // Apply custom font via style injection
+      let customStyles = '';
+      
+      // IMPORTANT: Inject complete theme CSS first to ensure proper styling in exports
+      if (themeConfig.mermaidConfig.themeCSS) {
+        customStyles += `\n${themeConfig.mermaidConfig.themeCSS}\n`;
+      }
+      
+      if (actualFont) {
+        customStyles += `
+text, .label, .messageText, .noteText, .labelText, .loopText, .taskText, 
+.sectionTitle, .titleText, .legendText, tspan {
+  font-family: ${actualFont} !important;
+}`;
+      }
+      
+      // Apply node colors via CSS hack
+      if (Object.keys(nodeColors).length > 0) {
+        for (const [domId, colors] of Object.entries(nodeColors)) {
+          customStyles += `
+#${domId} rect,
+#${domId} circle,
+#${domId} polygon,
+#${domId} path:not(.arrowhead):not(.path),
+#${domId} .note,
+#${domId} .actor {
+  fill: ${colors.fill} !important;
+  stroke: ${colors.stroke} !important;
+  stroke-width: 2px !important;
+}`;
+        }
+      }
+
+      if (customStyles) {
+        const styleTag = `<style>${customStyles}</style>`;
+        // Inject style after defs or at the beginning
+        if (processedSvg.includes('</defs>')) {
+          processedSvg = processedSvg.replace(/<\/defs>/, `</defs>${styleTag}`);
+        } else if (processedSvg.includes('<defs>')) {
+          processedSvg = processedSvg.replace(/<\/defs>/, `</defs>${styleTag}`);
+        } else {
+          processedSvg = processedSvg.replace(/<svg[^>]*>/, match => match + styleTag);
+        }
+      }
+
+      return processedSvg;
+  };
+  // The export handler reads the latest closure through this ref.
+  const renderMarkupRef = useRef(renderMarkup);
+  useEffect(() => {
+    renderMarkupRef.current = renderMarkup;
+  });
+
   useEffect(() => {
     const renderDiagram = async () => {
       if (!code) {
@@ -1176,152 +1350,7 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
       setLoading(true);
       try {
         setError(null);
-        // Unique ID for each render
-        const id = `mermaid-${Date.now()}`;
-        
-        // Apply custom font if selected
-        const configWithFont = actualFont ? {
-          ...themeConfig.mermaidConfig,
-          themeVariables: {
-            ...themeConfig.mermaidConfig.themeVariables,
-            fontFamily: actualFont,
-          },
-          themeCSS: `
-            ${themeConfig.mermaidConfig.themeCSS || ''}
-            /* Custom font override */
-            * { 
-              font-family: ${actualFont} !important; 
-            }
-            .node .label, .edgeLabel, .messageText, .noteText, .labelText, .loopText, 
-            .actor text, .taskText, .sectionTitle, .titleText, text {
-              font-family: ${actualFont} !important;
-            }
-          `
-        } : themeConfig.mermaidConfig;
-
-        if (usesHandDrawnFonts(configWithFont)) await ensureHandDrawnFonts();
-        // Measure labels with the real web font, not a fallback (clipped labels otherwise).
-        await ensureDiagramFonts(configWithFont);
-
-        // The default (11.x) or, via the ?mermaid= test switch, 12.x.
-        const renderer = await loadMermaid();
-        renderer.initialize({
-            startOnLoad: false,
-            suppressErrorRendering: true,
-            ...configWithFont,
-            // Last, so no theme config can relax it.
-            securityLevel: 'strict',
-        });
-
-        const { svg: renderedSvg } = await renderer.render(id, code);
-        
-        // Post-process SVG
-        let processedSvg = renderedSvg;
-
-        // 移除 width/height 的百分比值，使用 viewBox 定义的固定尺寸
-        // 这样缩放计算才能准确
-        processedSvg = processedSvg.replace(
-          /(<svg[^>]*)\s+width=["']100%["']/gi,
-          '$1'
-        ).replace(
-          /(<svg[^>]*)\s+height=["']100%["']/gi,
-          '$1'
-        );
-
-        // 如果 SVG 有 viewBox，从 viewBox 中提取尺寸并设置为 width/height
-        const viewBoxMatch = processedSvg.match(/viewBox=["']([^"']+)["']/);
-        if (viewBoxMatch) {
-          const viewBoxParts = viewBoxMatch[1].split(/\s+/).map(Number);
-          if (viewBoxParts.length === 4) {
-            const [, , width, height] = viewBoxParts;
-            // 在 svg 标签中添加明确的 width 和 height
-            processedSvg = processedSvg.replace(
-              /<svg/,
-              `<svg width="${width}" height="${height}"`
-            );
-          }
-        }
-
-        // Post-process SVG to force dash array for specific themes
-        if (themeConfig.mermaidConfig.themeVariables?.lineColor === '#ffffff' && 
-            themeConfig.bgClass === 'bg-[#1a1a1a]') {
-          // Dark Minimal theme - force dashed lines
-          processedSvg = processedSvg.replace(
-            /<path class="path"/g, 
-            '<path class="path" stroke-dasharray="10,8"'
-          );
-        }
-        
-        // Add hand-drawn filter for handDrawn theme
-        if (themeConfig.bgClass === 'bg-[#fffef9]') {
-          // Inject SVG filter definition for realistic hand-drawn effect
-          const filterDef = `<defs>
-  <filter id="roughen" x="-25%" y="-25%" width="150%" height="150%" filterUnits="objectBoundingBox">
-    <feTurbulence type="fractalNoise" baseFrequency="0.04 0.04" numOctaves="3" result="noise" seed="2"/>
-    <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
-    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="2" result="noise2" seed="5"/>
-    <feDisplacementMap in="displaced" in2="noise2" scale="1" xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
-  <filter id="roughen-line" x="-30%" y="-30%" width="160%" height="160%" filterUnits="objectBoundingBox">
-    <feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="3" result="noise" seed="1"/>
-    <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
-    <feTurbulence type="fractalNoise" baseFrequency="0.02 0.02" numOctaves="2" result="noise2" seed="3"/>
-    <feDisplacementMap in="displaced" in2="noise2" scale="0.8" xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
-</defs>`;
-          // Find existing defs or insert new one
-          if (processedSvg.includes('<defs>')) {
-            processedSvg = processedSvg.replace(/<defs>/, filterDef);
-          } else {
-            processedSvg = processedSvg.replace(/<svg[^>]*>/, match => match + filterDef);
-          }
-        }
-        
-        // Apply custom font via style injection
-        let customStyles = '';
-        
-        // IMPORTANT: Inject complete theme CSS first to ensure proper styling in exports
-        if (themeConfig.mermaidConfig.themeCSS) {
-          customStyles += `\n${themeConfig.mermaidConfig.themeCSS}\n`;
-        }
-        
-        if (actualFont) {
-          customStyles += `
-  text, .label, .messageText, .noteText, .labelText, .loopText, .taskText, 
-  .sectionTitle, .titleText, .legendText, tspan {
-    font-family: ${actualFont} !important;
-  }`;
-        }
-        
-        // Apply node colors via CSS hack
-        if (Object.keys(nodeColors).length > 0) {
-          for (const [domId, colors] of Object.entries(nodeColors)) {
-            customStyles += `
-  #${domId} rect,
-  #${domId} circle,
-  #${domId} polygon,
-  #${domId} path:not(.arrowhead):not(.path),
-  #${domId} .note,
-  #${domId} .actor {
-    fill: ${colors.fill} !important;
-    stroke: ${colors.stroke} !important;
-    stroke-width: 2px !important;
-  }`;
-          }
-        }
-
-        if (customStyles) {
-          const styleTag = `<style>${customStyles}</style>`;
-          // Inject style after defs or at the beginning
-          if (processedSvg.includes('</defs>')) {
-            processedSvg = processedSvg.replace(/<\/defs>/, `</defs>${styleTag}`);
-          } else if (processedSvg.includes('<defs>')) {
-            processedSvg = processedSvg.replace(/<\/defs>/, `</defs>${styleTag}`);
-          } else {
-            processedSvg = processedSvg.replace(/<svg[^>]*>/, match => match + styleTag);
-          }
-        }
-        
+        const processedSvg = await renderMarkupRef.current();
         setSvg(processedSvg);
       } catch (err) {
         console.error('Mermaid render error:', err);
