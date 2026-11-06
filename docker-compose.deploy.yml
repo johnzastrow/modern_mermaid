@@ -6,7 +6,7 @@
 # docs/DEPLOYMENT.md ("Verify the images").
 #
 # Settings (environment or a .env file beside this one, mode 600):
-#   MM_VERSION  release to run, e.g. 1.3.1
+#   MM_VERSION  release to run, e.g. 1.3.2
 #   MM_BIND     host address to publish on. Default 127.0.0.1: only a reverse proxy
 #               on this host can connect. Set 0.0.0.0 only on a trusted network.
 #   MM_PORT     host port (default 8080; 6080 on wharf).
@@ -30,7 +30,7 @@ x-hardening: &hardening
 services:
   modern-mermaid:
     <<: *hardening
-    image: ghcr.io/johnzastrow/modern_mermaid:${MM_VERSION:-1.3.1}
+    image: ghcr.io/johnzastrow/modern_mermaid:${MM_VERSION:-1.3.2}
     container_name: modern-mermaid
     ports:
       - "${MM_BIND:-127.0.0.1}:${MM_PORT:-8080}:8080"
@@ -49,7 +49,7 @@ services:
 
   themes-backend:
     <<: *hardening
-    image: ghcr.io/johnzastrow/modern_mermaid-themes:${MM_VERSION:-1.3.1}
+    image: ghcr.io/johnzastrow/modern_mermaid-themes:${MM_VERSION:-1.3.2}
     container_name: modern-mermaid-themes
     environment:
       THEMES_WRITE_TOKEN: ${THEMES_WRITE_TOKEN:-}

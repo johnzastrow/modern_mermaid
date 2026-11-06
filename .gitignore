@@ -38,4 +38,5 @@ coverage
 /test-results/
 /playwright-report/
 /blob-report/
+/inkscape-report/
 /playwright/.cache/
