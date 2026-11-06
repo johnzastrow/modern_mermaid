@@ -396,8 +396,8 @@ const Layout: React.FC = () => {
       
       // 加载主题（在背景和字体之后）
       if (shareParams.theme) {
-        const validThemes: ThemeType[] = ['linearLight', 'linearDark', 'notion', 'ghibli', 'spotless', 'brutalist', 'glassmorphism', 'memphis', 'softPop', 'cyberpunk', 'monochrome', 'darkMinimal', 'wireframe', 'handDrawn', 'grafana', 'noir', 'material', 'aurora'];
-        if (validThemes.includes(shareParams.theme as ThemeType)) {
+        // Accept every built-in theme; the key list comes from themes.ts so it cannot drift.
+        if (Object.prototype.hasOwnProperty.call(themes, shareParams.theme)) {
           setCurrentTheme(shareParams.theme as ThemeType);
           
           // 追踪从 URL 加载主题
