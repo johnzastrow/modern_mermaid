@@ -1,8 +1,20 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import { readFileSync } from 'node:fs';
+
+// Version strings shown in the header. Read at build time, so the client
+// bundle carries short strings rather than whole package.json files.
+const readVersion = (path: string): string =>
+  JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8')).version;
+const versionDefines = {
+  __APP_VERSION__: JSON.stringify(readVersion('./package.json')),
+  __MERMAID_VERSION__: JSON.stringify(readVersion('./node_modules/mermaid/package.json')),
+  __MERMAID12_VERSION__: JSON.stringify(readVersion('./node_modules/mermaid12/package.json')),
+};
 
 export default defineConfig({
   plugins: [react()],
+  define: versionDefines,
   test: {
     environment: 'jsdom',
     globals: true,
