@@ -17,6 +17,8 @@ const PORT = 4173;
 
 export default defineConfig({
   testDir: './e2e',
+  // The Inkscape fidelity suite is opt-in: pnpm test:inkscape.
+  testIgnore: '**/inkscape/**',
   // Rendering a diagram is genuinely slow the first time Mermaid lazy-loads a
   // diagram chunk; the default 5s assertion timeout is too tight for that.
   expect: { timeout: 10_000 },

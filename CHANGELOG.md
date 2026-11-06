@@ -3,6 +3,31 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.2] - 2026-11-06
+
+### Fixed
+- Labels no longer lose their last characters ("Login Succes", "COMMEN").
+  Mermaid sizes each box by measuring its label, and on a theme's first render
+  the web font (Inter, Nunito, ...) was often still loading, so boxes were
+  sized for the fallback font. Rendering now waits, up to 3 seconds, for the
+  regular and bold faces of every web font the diagram config names. This
+  generalizes the wait that only the Hand Drawn theme had.
+
+### Added
+- `pnpm test:inkscape`: an opt-in Playwright suite that exports every example
+  diagram as SVG, renders it with Chromium and Inkscape using the same fonts,
+  and scores the match (SSIM, drawn- and dark-pixel ratios, lost HTML labels,
+  Inkscape-risky SVG features). It writes `inkscape-report/report.md` with
+  side-by-side images. First result with Inkscape 1.5: 22 good, 3 degraded,
+  10 poor of 35. Every poor result is a diagram type with HTML labels in
+  `foreignObject`, which Inkscape does not render. Gantt grid lines
+  (`stroke="currentColor"`) and the info diagram (no `viewBox`) also degrade.
+- README: a "Software design diagrams" section (sequence, class, ER, state,
+  flowchart, requirement) in the restrained themes.
+
+### Changed
+- Deployment defaults and docs point at 1.3.2.
+
 ## [1.3.1] - 2026-11-06
 
 ### Fixed

@@ -24,7 +24,7 @@ diagram text.
 
 | Tag | Meaning |
 |---|---|
-| `1.3.1` | One release. **Use this in production.** |
+| `1.3.2` | One release. **Use this in production.** |
 | `1.3` | Latest patch of the 1.3 line |
 | `latest` | Latest release |
 | `edge`, `sha-<short>` | Builds of `main`; unreleased, for testing only |
@@ -35,7 +35,7 @@ Put these in a `.env` file next to the compose file (`chmod 600 .env`).
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `MM_VERSION` | `1.3.1` | Release to run (deploy compose file only) |
+| `MM_VERSION` | `1.3.2` | Release to run (deploy compose file only) |
 | `MM_BIND` | `127.0.0.1` | Host address the app is published on. Keep the default when a reverse proxy runs on the same host. Use `0.0.0.0` only on a trusted network. |
 | `MM_PORT` | `8080` | Host port |
 | `THEMES_WRITE_TOKEN` | unset | Owner write token for the shared theme library, at least 32 characters. Required for writes on an internet-facing instance. |
@@ -64,10 +64,10 @@ computers. To revoke it, change `THEMES_WRITE_TOKEN` and recreate the
 
 ```bash
 mkdir -p ~/stacks/modern-mermaid && cd ~/stacks/modern-mermaid
-curl -fsSLO https://raw.githubusercontent.com/johnzastrow/modern_mermaid/v1.3.1/docker-compose.deploy.yml
+curl -fsSLO https://raw.githubusercontent.com/johnzastrow/modern_mermaid/v1.3.2/docker-compose.deploy.yml
 umask 077
 cat > .env <<EOF
-MM_VERSION=1.3.1
+MM_VERSION=1.3.2
 MM_PORT=8080
 THEMES_WRITE_TOKEN=$(openssl rand -hex 32)
 EOF
@@ -82,10 +82,10 @@ and carry provenance attestations. Verify before the first deploy and after each
 upgrade:
 
 ```bash
-cosign verify ghcr.io/johnzastrow/modern_mermaid:1.3.1 \
-  --certificate-identity https://github.com/johnzastrow/modern_mermaid/.github/workflows/_images.yml@refs/tags/v1.3.1 \
+cosign verify ghcr.io/johnzastrow/modern_mermaid:1.3.2 \
+  --certificate-identity https://github.com/johnzastrow/modern_mermaid/.github/workflows/_images.yml@refs/tags/v1.3.2 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
-gh attestation verify oci://ghcr.io/johnzastrow/modern_mermaid:1.3.1 --repo johnzastrow/modern_mermaid
+gh attestation verify oci://ghcr.io/johnzastrow/modern_mermaid:1.3.2 --repo johnzastrow/modern_mermaid
 ```
 
 The identity pins the exact workflow and release tag that signed the image, so a
@@ -171,5 +171,5 @@ Check the download first:
 
 ```bash
 sha256sum -c SHA256SUMS --ignore-missing
-gh attestation verify modern-mermaid-1.3.1-dist.zip --repo johnzastrow/modern_mermaid
+gh attestation verify modern-mermaid-1.3.2-dist.zip --repo johnzastrow/modern_mermaid
 ```

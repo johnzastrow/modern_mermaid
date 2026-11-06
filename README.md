@@ -99,7 +99,22 @@ pnpm build      # production build to dist/
 pnpm preview    # preview the build
 pnpm lint       # ESLint
 pnpm test       # Vitest
+pnpm test:e2e   # Playwright, against the production build
 ```
+
+### SVG fidelity in Inkscape
+
+`pnpm test:inkscape` exports every example diagram as SVG through the app,
+renders it with Chromium and with Inkscape, and writes a scored comparison to
+`inkscape-report/report.md` (with side-by-side images). It needs `inkscape` and
+ImageMagick 7 (`magick`) on `PATH` and skips itself otherwise. Set
+`INKSCAPE_THEME=<theme id>` to test another theme.
+
+Known result: diagram types whose labels are HTML inside `foreignObject`
+(flowchart, class, state, ER, mindmap, kanban, requirement, block, swimlane)
+lose that text in Inkscape, because Inkscape does not render `foreignObject`.
+Pure-SVG types (sequence, sankey, architecture, pie, charts, git graph and
+others) carry over well.
 
 ---
 
@@ -114,8 +129,8 @@ with cosign and carry SBOM and provenance attestations.
 ### Option A: run a released image (recommended)
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/johnzastrow/modern_mermaid/v1.3.1/docker-compose.deploy.yml
-MM_VERSION=1.3.1 docker compose -f docker-compose.deploy.yml up -d
+curl -fsSLO https://raw.githubusercontent.com/johnzastrow/modern_mermaid/v1.3.2/docker-compose.deploy.yml
+MM_VERSION=1.3.2 docker compose -f docker-compose.deploy.yml up -d
 ```
 
 The app listens on `127.0.0.1:8080`; put a TLS reverse proxy (Caddy, Traefik,
@@ -174,7 +189,26 @@ More diagram examples live in [`src/utils/examples.ts`](src/utils/examples.ts).
 
 ---
 
-## 🎨 Diagram gallery
+## Software design diagrams
+
+The everyday diagrams of software work, in the restrained themes suited to design docs, ADRs and wikis.
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/images/design-sequence.png" alt="Sequence diagram of a login API call, Linear Light theme"/><br/><b>Sequence</b> · Linear Light</td>
+    <td width="33%"><img src="docs/images/design-class.png" alt="Class diagram of an e-commerce domain, Notion theme"/><br/><b>Class</b> · Notion</td>
+    <td width="33%"><img src="docs/images/design-er.png" alt="Entity-relationship diagram of a blog schema, Monochrome theme"/><br/><b>Entity-relationship</b> · Monochrome</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/design-state.png" alt="State diagram of an order lifecycle, Material theme"/><br/><b>State</b> · Material</td>
+    <td><img src="docs/images/design-flowchart.png" alt="Login flowchart, Linear Dark theme"/><br/><b>Flowchart</b> · Linear Dark</td>
+    <td><img src="docs/images/design-requirement.png" alt="Requirement diagram, Linear Light theme"/><br/><b>Requirement</b> · Linear Light</td>
+  </tr>
+</table>
+
+---
+
+## Diagram gallery
 
 Beyond flowcharts and sequence diagrams, the built-in themes also style Mermaid's newer and less common diagram types. Each example below is in the **Examples** menu; the caption names the diagram type and theme.
 
