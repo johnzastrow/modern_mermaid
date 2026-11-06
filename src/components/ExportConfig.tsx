@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { MermaidConfig } from 'mermaid';
 import { X, Copy, Check } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -62,7 +63,9 @@ const ExportConfig: React.FC<ExportConfigProps> = ({ isOpen, onClose, mermaidCon
     }
   };
 
-  return (
+  // Portal to <body>: the toolbar sits in its own stacking context, so a
+  // fixed modal rendered inside it can be overlapped by the zoom controls.
+  return createPortal(
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       role="dialog"
@@ -120,7 +123,8 @@ const ExportConfig: React.FC<ExportConfigProps> = ({ isOpen, onClose, mermaidCon
           </p>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

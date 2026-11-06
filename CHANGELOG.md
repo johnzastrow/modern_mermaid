@@ -5,7 +5,22 @@ All notable changes to this project are documented here. This project adheres to
 
 ## [Unreleased]
 
+### Fixed
+- Share links with the Windows 95, Playful Doodle, Organic Natural, High Tech,
+  Kawaii Cute or Geometric Collage theme opened in the default theme. The
+  loader checked a hand-maintained list of theme names that had fallen behind;
+  it now accepts any key of the theme registry.
+- The Export config and Import dialogs no longer sit underneath the preview's
+  zoom controls. They rendered inside the toolbar's stacking context, so their
+  z-index could not lift them above it; both now render in a portal on
+  `document.body`.
+
 ### Changed
+- README screenshots: the hero shows the visual theme editor, the Markdown
+  export section shows the config dialog, and the theme gallery is replaced by
+  a gallery of less common diagram types (architecture, sankey, quadrant, git
+  graph, block, XY chart), each in a different theme. The old screenshots stay
+  for the translated READMEs.
 - Deployment defaults now point at 1.3.0: `docker-compose.deploy.yml` falls back
   to `MM_VERSION=1.3.0`, and the README, `docs/DEPLOYMENT.md` and `SECURITY.md`
   use 1.3.0 in their examples, verify commands and supported-versions table.

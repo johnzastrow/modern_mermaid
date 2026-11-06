@@ -22,7 +22,7 @@ Modern Mermaid is a browser-based Mermaid editor you run yourself. Beyond live e
 > and telemetry removed, dependencies modernized, hardened for container
 > deployment, and extended with a full **theme export → edit → import** workflow.
 
-<img src="docs/images/screenshot-merphis.png" width="100%" alt="Modern Mermaid editor"/>
+<img src="docs/images/feature-theme-editor.png" width="100%" alt="Modern Mermaid with the visual theme editor open beside a mindmap in the Hand Drawn theme"/>
 
 ---
 
@@ -32,6 +32,8 @@ Modern Mermaid is a browser-based Mermaid editor you run yourself. Beyond live e
 Turn any theme into a paste-ready snippet for a ` ```mermaid ` block:
 - **Inline `%%{init}%%`** — colors + fonts (`themeVariables`). Works in every renderer, **including GitHub**.
 - **YAML frontmatter** — full `themeCSS` styling (rounded corners, per-element rules). Renders richly in **Typora** and other complete Mermaid renderers; GitHub degrades gracefully to colors/fonts.
+
+<img src="docs/images/feature-export-config.png" width="100%" alt="Export theme config dialog showing YAML frontmatter and an inline init directive for the Cyberpunk theme"/>
 
 ### 🖌️ Visual theme editor
 Design a theme with **rich controls** — per-variable color pickers, a **font picker with live previews**, a **corner-radius** slider, a dark-mode toggle, and an advanced `themeCSS` editor with a reload button. Everything previews in real time.
@@ -172,20 +174,24 @@ More diagram examples live in [`src/utils/examples.ts`](src/utils/examples.ts).
 
 ---
 
-## 🎨 Theme gallery
+## 🎨 Diagram gallery
+
+Beyond flowcharts and sequence diagrams, the built-in themes also style Mermaid's newer and less common diagram types. Each example below is in the **Examples** menu; the caption names the diagram type and theme.
 
 <table>
   <tr>
-    <td width="33%"><img src="docs/images/screenshot-brutalist.png" alt="Brutalist"/><br/><b>Brutalist</b></td>
-    <td width="33%"><img src="docs/images/screenshot-cyberpunk.png" alt="Cyberpunk"/><br/><b>Cyberpunk</b></td>
-    <td width="33%"><img src="docs/images/screenshot-ghibli.png" alt="Ghibli"/><br/><b>Ghibli</b></td>
+    <td width="33%"><img src="docs/images/diagram-architecture.png" alt="Architecture diagram in the Linear Dark theme"/><br/><b>Architecture</b> · Linear Dark</td>
+    <td width="33%"><img src="docs/images/diagram-sankey.png" alt="Sankey diagram in the Aurora theme"/><br/><b>Sankey</b> · Aurora</td>
+    <td width="33%"><img src="docs/images/diagram-quadrant.png" alt="Quadrant chart in the Cyberpunk theme"/><br/><b>Quadrant chart</b> · Cyberpunk</td>
   </tr>
   <tr>
-    <td><img src="docs/images/screenshot-merphis.png" alt="Memphis"/><br/><b>Memphis</b></td>
-    <td><img src="docs/images/screenshot-spotless.png" alt="Spotless"/><br/><b>Spotless</b></td>
-    <td><img src="docs/images/screenshot-handdrawn.png" alt="Hand Drawn"/><br/><b>Hand Drawn</b></td>
+    <td><img src="docs/images/diagram-gitgraph.png" alt="Git graph in the Ghibli theme"/><br/><b>Git graph</b> · Ghibli</td>
+    <td><img src="docs/images/diagram-block.png" alt="Block diagram in the Brutalist theme"/><br/><b>Block diagram</b> · Brutalist</td>
+    <td><img src="docs/images/diagram-xychart.png" alt="XY chart in the Grafana theme"/><br/><b>XY chart</b> · Grafana</td>
   </tr>
 </table>
+
+The examples also cover mindmaps, timelines, C4 context, requirement, kanban, user journey, Gantt, ER, class and state diagrams.
 
 ---
 

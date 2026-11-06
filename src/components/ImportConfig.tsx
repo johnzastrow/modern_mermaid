@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ClipboardPaste } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { parseThemeConfigInput } from '../utils/configImport';
@@ -34,7 +35,9 @@ const ImportConfig: React.FC<ImportConfigProps> = ({ isOpen, onClose, onImport }
     onClose();
   };
 
-  return (
+  // Portal to <body>: the toolbar sits in its own stacking context, so a
+  // fixed modal rendered inside it can be overlapped by the zoom controls.
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={close} />
       <div className="relative w-full max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700">
@@ -78,7 +81,8 @@ const ImportConfig: React.FC<ImportConfigProps> = ({ isOpen, onClose, onImport }
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 
