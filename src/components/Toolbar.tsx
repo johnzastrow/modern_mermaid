@@ -24,7 +24,7 @@ interface ToolbarProps {
   onThemeChange: (theme: ThemeType) => void;
   onDownload: (transparent: boolean) => void;
   onCopy: (transparent: boolean) => void;
-  onDownloadSvg: (transparent: boolean) => void;
+  onDownloadSvg: (transparent: boolean, editorSafe?: boolean) => void;
   onShare: () => void;
   selectedBackground: string;
   onBackgroundChange: (bg: BackgroundStyle) => void;
@@ -352,6 +352,18 @@ const Toolbar: React.FC<ToolbarProps> = ({
                  <span className="block font-medium">{t.svgTransparent || 'SVG (transparent)'}</span>
                  <span className="block text-xs text-gray-500 dark:text-gray-400">
                    {t.svgTransparentDesc || 'Vector, no background'}
+                 </span>
+               </div>
+             </button>
+             <button
+               onClick={() => { onDownloadSvg(false, true); setIsDownloadOpen(false); }}
+               className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+             >
+               <Shapes className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+               <div>
+                 <span className="block font-medium">{t.svgEditorSafe || 'SVG (Inkscape / editors)'}</span>
+                 <span className="block text-xs text-gray-500 dark:text-gray-400">
+                   {t.svgEditorSafeDesc || 'Plain SVG text labels, for Inkscape and other editors'}
                  </span>
                </div>
              </button>

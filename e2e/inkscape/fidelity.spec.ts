@@ -39,6 +39,8 @@ const FEATURE_PROBES: Record<string, RegExp> = {
 };
 
 const theme = process.env.INKSCAPE_THEME ?? 'linearLight';
+// Mermaid major to test: 11 (the default) or 12 (the app's ?mermaid=12 switch).
+const mermaid = process.env.INKSCAPE_MERMAID === '12' ? '12' : '11';
 
 const cases = (Object.entries(examples) as [ExampleCategory, (typeof examples)[ExampleCategory]][])
   .flatMap(([category, list]) => list.map((ex) => ({ category, id: ex.id })));
@@ -50,14 +52,26 @@ test.beforeAll(async () => {
   await mkdir(REPORT_DIR, { recursive: true });
 });
 
-async function exportSvg(page: Page, id: string): Promise<string> {
-  await page.goto(`/?example=${encodeURIComponent(id)}&theme=${theme}&lang=en`);
+/** Menu entry for each export variant under test. */
+const VARIANTS = {
+  standard: 'SVG (vector)',
+  editor: 'SVG (Inkscape / editors)',
+} as const;
+type Variant = keyof typeof VARIANTS;
+
+async function openExample(page: Page, id: string) {
+  await page.goto(`/?example=${encodeURIComponent(id)}&theme=${theme}&lang=en&mermaid=${mermaid}`);
   await expect(anyDiagram(page)).toBeVisible();
+  // Prove the switch took effect: the header badge names Mermaid only when overridden.
+  if (mermaid === '12') await expect(page.getByText(/Mermaid 12\./).first()).toBeVisible();
   // Let lazy diagram chunks and fonts settle before exporting.
   await page.waitForTimeout(1200);
+}
+
+async function exportSvg(page: Page, variant: Variant): Promise<string> {
   await openMenu(page, /^Export$/);
   const { text } = await downloadText(page, async () => {
-    await page.getByText('SVG (vector)', { exact: true }).click();
+    await page.getByText(VARIANTS[variant], { exact: true }).click();
   });
   return text;
 }
@@ -83,68 +97,79 @@ function htmlLabelCount(page: Page, svg: string): Promise<number> {
 
 for (const { category, id } of cases) {
   test(`${category}: ${id}`, async ({ page }) => {
-    const base = join(REPORT_DIR, id);
-    const svg = await exportSvg(page, id);
-    await writeFile(`${base}.svg`, svg);
+    await openExample(page, id);
+    const exports = {} as Record<Variant, string>;
+    for (const variant of Object.keys(VARIANTS) as Variant[]) exports[variant] = await exportSvg(page, variant);
 
-    const features = Object.fromEntries(
-      Object.entries(FEATURE_PROBES).map(([k, re]) => [k, (svg.match(re) ?? []).length]),
-    );
-    // Without a viewBox or size on the root, Inkscape guesses the geometry (info diagram).
-    const root = svg.match(/<svg\b[^>]*>/)?.[0] ?? '';
-    features.noViewBox = /\bviewBox=/.test(root) || /\bwidth="\d/.test(root) ? 0 : 1;
-
-    // Reference: Chromium rendering the exported file on its own, as an image,
-    // so nothing from the app (stylesheets, scripts) can help it.
+    // Reference: Chromium rendering the standard export on its own, as an
+    // image, so nothing from the app can help it. Both variants are scored
+    // against it: it is what the user saw.
+    const refPng = join(REPORT_DIR, `${id}.chromium.png`);
     const ref = await page.context().newPage();
     await ref.setViewportSize({ width: RENDER_WIDTH, height: 800 });
-    const dataUri = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+    const dataUri = `data:image/svg+xml;base64,${Buffer.from(exports.standard).toString('base64')}`;
     await ref.setContent(
       `<html><body style="margin:0;background:#fff"><img id="d" src="${dataUri}" style="display:block;width:${RENDER_WIDTH}px"></body></html>`,
     );
     await ref.locator('#d').evaluate((img: HTMLImageElement) => img.decode());
-    await ref.locator('#d').screenshot({ path: `${base}.chromium.png` });
+    await ref.locator('#d').screenshot({ path: refPng });
     await ref.close();
+    const refCov = await coverage(refPng, 96);
+    const refDark = await coverage(refPng, 50);
 
-    // Inkscape, headless, same width and background.
-    const inkscapeLog = await run(
-      INKSCAPE,
-      [`${base}.svg`, '--export-type=png', `--export-filename=${base}.inkscape.png`,
-        `--export-width=${RENDER_WIDTH}`, '--export-background=#ffffff', '--export-background-opacity=1'],
-      { timeout: 60_000 },
-    ).then(
-      (r) => r.stderr,
-      (err: { stderr?: string }) => String(err.stderr ?? err),
-    );
-    const warnings = inkscapeLog
-      .split('\n')
-      .map((l) => l.trim())
-      .filter((l) => l && !/^\s*$/.test(l) && !/Gtk-|dbus|Fontconfig/i.test(l));
+    const results = {} as Record<Variant, FidelityResult>;
+    for (const variant of Object.keys(VARIANTS) as Variant[]) {
+      const svg = exports[variant];
+      const base = join(REPORT_DIR, `${id}.${variant}`);
+      await writeFile(`${base}.svg`, svg);
 
-    // Inkscape must at least open and draw the file.
-    const inkPng = await readFile(`${base}.inkscape.png`).catch(() => null);
-    expect(inkPng, `Inkscape produced no PNG for ${id}:\n${inkscapeLog}`).not.toBeNull();
+      const features = Object.fromEntries(
+        Object.entries(FEATURE_PROBES).map(([k, re]) => [k, (svg.match(re) ?? []).length]),
+      );
+      // Without a viewBox or size on the root, Inkscape guesses the geometry (info diagram).
+      const root = svg.match(/<svg\b[^>]*>/)?.[0] ?? '';
+      features.noViewBox = /\bviewBox=/.test(root) || /\bwidth="\d/.test(root) ? 0 : 1;
 
-    // Compare at identical geometry. SSIM: 1 is identical.
-    await run(MAGICK, [`${base}.inkscape.png`, '-resize', await geometry(`${base}.chromium.png`), `${base}.inkscape.sized.png`]);
-    const ssim = await compareSsim(`${base}.chromium.png`, `${base}.inkscape.sized.png`);
-    const refCov = await coverage(`${base}.chromium.png`, 96);
-    const inkCov = await coverage(`${base}.inkscape.sized.png`, 96);
-    const refDark = await coverage(`${base}.chromium.png`, 50);
-    const inkDark = await coverage(`${base}.inkscape.sized.png`, 50);
-    await run(MAGICK, [`${base}.chromium.png`, `${base}.inkscape.sized.png`, '-background', '#888', '-splice', '0x0', '+append', `${base}.side-by-side.png`]);
+      // Inkscape, headless, same width and background.
+      const inkscapeLog = await run(
+        INKSCAPE,
+        [`${base}.svg`, '--export-type=png', `--export-filename=${base}.inkscape.png`,
+          `--export-width=${RENDER_WIDTH}`, '--export-background=#ffffff', '--export-background-opacity=1'],
+        { timeout: 60_000 },
+      ).then(
+        (r) => r.stderr,
+        (err: { stderr?: string }) => String(err.stderr ?? err),
+      );
+      const warnings = inkscapeLog
+        .split('\n')
+        .map((l) => l.trim())
+        .filter((l) => l && !/Gtk-|dbus|Fontconfig/i.test(l));
 
-    const result: FidelityResult = {
-      category, id, theme, ssim,
-      coverageRatio: refCov > 0 ? inkCov / refCov : 1,
-      darkRatio: refDark > 0 ? inkDark / refDark : 1,
-      htmlLabels: await htmlLabelCount(page, svg),
-      features, warnings: warnings.slice(0, 10),
-    };
-    await writeFile(`${base}.json`, JSON.stringify(result, null, 2));
-    test.info().annotations.push({ type: 'ssim', description: ssim.toFixed(3) });
+      // Inkscape must at least open and draw the file.
+      const inkPng = await readFile(`${base}.inkscape.png`).catch(() => null);
+      expect(inkPng, `Inkscape produced no PNG for ${id} (${variant}):\n${inkscapeLog}`).not.toBeNull();
 
-    expect(inkCov, `Inkscape rendered an empty image for ${id}`).toBeGreaterThan(0);
+      // Compare at identical geometry. SSIM: 1 is identical.
+      await run(MAGICK, [`${base}.inkscape.png`, '-resize', await geometry(refPng), `${base}.inkscape.sized.png`]);
+      const ssim = await compareSsim(refPng, `${base}.inkscape.sized.png`);
+      const inkCov = await coverage(`${base}.inkscape.sized.png`, 96);
+      const inkDark = await coverage(`${base}.inkscape.sized.png`, 50);
+      await run(MAGICK, [refPng, `${base}.inkscape.sized.png`, '-background', '#888', '-splice', '0x0', '+append', `${base}.side-by-side.png`]);
+
+      results[variant] = {
+        category, id, theme, mermaid, variant, ssim,
+        coverageRatio: refCov > 0 ? inkCov / refCov : 1,
+        darkRatio: refDark > 0 ? inkDark / refDark : 1,
+        htmlLabels: await htmlLabelCount(page, svg),
+        features, warnings: warnings.slice(0, 10),
+      };
+      expect(inkCov, `Inkscape rendered an empty image for ${id} (${variant})`).toBeGreaterThan(0);
+    }
+    await writeFile(join(REPORT_DIR, `${id}.json`), JSON.stringify(results, null, 2));
+    test.info().annotations.push({
+      type: 'ssim',
+      description: `standard ${results.standard.ssim.toFixed(3)}, editor ${results.editor.ssim.toFixed(3)}`,
+    });
   });
 }
 

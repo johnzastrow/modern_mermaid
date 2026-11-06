@@ -104,17 +104,40 @@ pnpm test:e2e   # Playwright, against the production build
 
 ### SVG fidelity in Inkscape
 
-`pnpm test:inkscape` exports every example diagram as SVG through the app,
-renders it with Chromium and with Inkscape, and writes a scored comparison to
-`inkscape-report/report.md` (with side-by-side images). It needs `inkscape` and
-ImageMagick 7 (`magick`) on `PATH` and skips itself otherwise. Set
-`INKSCAPE_THEME=<theme id>` to test another theme.
+**Export > SVG (Inkscape / editors)** produces an SVG that Inkscape and other
+SVG editors display correctly. It re-renders the diagram with plain SVG text
+labels (Mermaid's `htmlLabels: false`) and then rewrites what editors drop:
+leftover HTML labels become SVG text, `currentColor` becomes a real color, CSS
+drop shadows become SVG filters, edge spaces in text runs become non-breaking
+spaces, and an unsized diagram gets a measured `viewBox`. The standard SVG
+export is unchanged and remains the best choice for browsers and docs.
 
-Known result: diagram types whose labels are HTML inside `foreignObject`
-(flowchart, class, state, ER, mindmap, kanban, requirement, block, swimlane)
-lose that text in Inkscape, because Inkscape does not render `foreignObject`.
-Pure-SVG types (sequence, sankey, architecture, pie, charts, git graph and
-others) carry over well.
+`pnpm test:inkscape` measures this. It exports every example diagram both ways,
+renders each with Chromium and Inkscape on the same fonts, and writes a scored
+comparison with side-by-side images to `inkscape-report/<theme>-mermaid-<major>/report.md`.
+It needs `inkscape` and ImageMagick 7 (`magick`) on `PATH` and skips itself
+otherwise. `INKSCAPE_MERMAID=12` tests the Mermaid 12 switch;
+`INKSCAPE_THEME=<theme id>` another theme.
+
+Results with Inkscape 1.5 (35 diagrams):
+
+| Export | Mermaid 11 | Mermaid 12 |
+|---|---|---|
+| Standard SVG | 22 good, 3 degraded, 10 poor | 23 good, 2 degraded, 10 poor |
+| Inkscape / editors | 28 good, 7 degraded, 0 poor | 29 good, 6 degraded, 0 poor |
+
+"Poor" means visible content is lost; with the standard export that is the
+text of every diagram type that uses HTML labels (flowchart, class, state, ER,
+mindmap, kanban, requirement, block, swimlane). The remaining "degraded" results
+with the editor export have all their content; plain-text labels wrap a little
+differently, and Inkscape may substitute a font that is not installed on the
+system.
+
+SVG files reference fonts by name; they do not embed them. For exact type in
+Inkscape, install the theme's fonts on that machine (the app's fonts are OFL
+licensed: `public/fonts/` and the `@fontsource` packages). The suite scores the
+Hand Drawn theme poorly for this reason: Excalifont ships as unicode-range
+slices, which neither renderer can use as a system font.
 
 ---
 

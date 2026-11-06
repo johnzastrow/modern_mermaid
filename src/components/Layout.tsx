@@ -58,9 +58,9 @@ const Layout: React.FC = () => {
     }
   };
 
-  const handleDownloadSvg = (transparent: boolean) => {
+  const handleDownloadSvg = (transparent: boolean, editorSafe = false) => {
     if (previewRef.current) {
-      previewRef.current.exportSvg(transparent);
+      previewRef.current.exportSvg(transparent, editorSafe);
     }
   };
 
