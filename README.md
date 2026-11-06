@@ -114,8 +114,8 @@ with cosign and carry SBOM and provenance attestations.
 ### Option A: run a released image (recommended)
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/johnzastrow/modern_mermaid/v1.3.0/docker-compose.deploy.yml
-MM_VERSION=1.3.0 docker compose -f docker-compose.deploy.yml up -d
+curl -fsSLO https://raw.githubusercontent.com/johnzastrow/modern_mermaid/v1.3.1/docker-compose.deploy.yml
+MM_VERSION=1.3.1 docker compose -f docker-compose.deploy.yml up -d
 ```
 
 The app listens on `127.0.0.1:8080`; put a TLS reverse proxy (Caddy, Traefik,

@@ -101,7 +101,7 @@ Out of scope:
   be tagged on a commit in `main`; release files have SHA-256 checksums and
   GitHub build provenance. Only releases move `latest`.
 
-## Known, accepted advisories (1.3.0)
+## Known, accepted advisories (1.3.1)
 
 These have no fix that the depending package's version range allows. None is
 reachable from a request to a running instance.

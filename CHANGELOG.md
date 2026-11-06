@@ -3,7 +3,7 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.3.1] - 2026-11-06
 
 ### Fixed
 - Share links with the Windows 95, Playful Doodle, Organic Natural, High Tech,
@@ -21,9 +21,9 @@ All notable changes to this project are documented here. This project adheres to
   a gallery of less common diagram types (architecture, sankey, quadrant, git
   graph, block, XY chart), each in a different theme. The old theme
   screenshots are removed; the translated READMEs use the new images.
-- Deployment defaults now point at 1.3.0: `docker-compose.deploy.yml` falls back
-  to `MM_VERSION=1.3.0`, and the README, `docs/DEPLOYMENT.md` and `SECURITY.md`
-  use 1.3.0 in their examples, verify commands and supported-versions table.
+- Deployment defaults point at this release: `docker-compose.deploy.yml` falls
+  back to `MM_VERSION=1.3.1`, and the README, `docs/DEPLOYMENT.md` and
+  `SECURITY.md` use it in their examples, verify commands and version tables.
   1.3.0 shipped with these still at 1.2.0, so an install that did not set
   `MM_VERSION` ran 1.2.0.
 
