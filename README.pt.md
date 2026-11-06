@@ -23,7 +23,7 @@
 
 Experiência ao Vivo: [https://modern-mermaid.live/](https://modern-mermaid.live/)
 
-<img src="docs/images/screenshot-merphis.png" width="100%" alt="merphis"/>
+<img src="docs/images/feature-theme-editor.png" width="100%" alt="Modern Mermaid theme editor"/>
 
 <a name="features"></a>
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -84,8 +84,7 @@ Experiência ao Vivo: [https://modern-mermaid.live/](https://modern-mermaid.live
 <summary>Clique para expandir as capturas de tela</summary>
 
 ### Interface Principal
-![Interface Principal](docs/images/screenshot-main.png)
-<!-- 👆 Adicione captura de tela da interface principal -->
+![Interface Principal](docs/images/feature-export-config.png)
 
 ### Galeria de Temas
 
@@ -93,14 +92,14 @@ Experiência ao Vivo: [https://modern-mermaid.live/](https://modern-mermaid.live
 
 <table>
   <tr>
-    <td width="33%"><a target="_blank" href="https://modern-mermaid.live/?theme=brutalist&example=flowchart-simple"><img src="docs/images/screenshot-brutalist.png" alt="brutalist"/></a><br/><b>Brutalist</b></td>
-    <td width="33%"><a target="_blank" href="https://modern-mermaid.live/?theme=cyberpunk&example=sequence-payment"><img src="docs/images/screenshot-cyberpunk.png" alt="cyberpunk"/></a><br/><b>Cyberpunk</b></td>
-    <td width="33%"><a target="_blank" href="https://modern-mermaid.live/?theme=ghibli&example=pie-market"><img src="docs/images/screenshot-ghibli.png" alt="ghibli"/></a><br/><b>Ghibli</b></td>
+    <td width="33%"><img src="docs/images/diagram-architecture.png" alt="Architecture diagram, Linear Dark theme"/><br/><b>Architecture</b> · Linear Dark</td>
+    <td width="33%"><img src="docs/images/diagram-sankey.png" alt="Sankey diagram, Aurora theme"/><br/><b>Sankey</b> · Aurora</td>
+    <td width="33%"><img src="docs/images/diagram-quadrant.png" alt="Quadrant chart, Cyberpunk theme"/><br/><b>Quadrant chart</b> · Cyberpunk</td>
   </tr>
   <tr>
-    <td><a target="_blank" href="https://modern-mermaid.live/?theme=memphis&example=flowchart-simple"><img src="docs/images/screenshot-merphis.png" alt="merphis"/></a><br/><b>Merphis</b></td>
-    <td><a target="_blank" href="https://modern-mermaid.live/?theme=spotless&example=flowchart-simple"><img src="docs/images/screenshot-spotless.png" alt="spotless"/></a><br/><b>Spotless</b></td>
-    <td><a target="_blank" href="https://modern-mermaid.live/?theme=handDrawn&example=pie-market"><img src="docs/images/screenshot-handdrawn.png" alt="handdrawn"/></a><br/><b>HandDrawn</b></td>
+    <td><img src="docs/images/diagram-gitgraph.png" alt="Git graph, Ghibli theme"/><br/><b>Git graph</b> · Ghibli</td>
+    <td><img src="docs/images/diagram-block.png" alt="Block diagram, Brutalist theme"/><br/><b>Block diagram</b> · Brutalist</td>
+    <td><img src="docs/images/diagram-xychart.png" alt="XY chart, Grafana theme"/><br/><b>XY chart</b> · Grafana</td>
   </tr>
 </table>
 
