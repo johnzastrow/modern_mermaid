@@ -3,6 +3,24 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-11-05
+
+### Added
+- The header shows the app version, linked to its release notes. Hovering it
+  also shows the bundled Mermaid version. Both are read from `package.json`
+  files at build time.
+- A hidden test switch for Mermaid 12.3.0. Add `?mermaid=12` to the URL to
+  render with 12.x; the choice is remembered in that browser, and the header
+  badge turns amber and names the Mermaid version while it is active.
+  `?mermaid=11` returns to the default. Mermaid 11.17.2 stays the default for
+  everyone else. 12.x is a separate download, fetched only when selected, and
+  is kept out of the offline (service worker) cache.
+
+### Notes
+- Mermaid 12 changes how existing diagrams look: ELK becomes the default
+  layout and the `neo` look the default appearance. See the
+  [Mermaid 12.0.0 release notes](https://github.com/mermaid-js/mermaid/releases/tag/mermaid%4012.0.0).
+
 ## [1.2.0] - 2026-11-05
 
 First formal release, hardened for running on the internet. The version jumps

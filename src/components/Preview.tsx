@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import mermaid from 'mermaid';
+import { loadMermaid } from '../utils/mermaidVersion';
 import { toPng, toJpeg } from 'html-to-image';
 import { buildStandaloneSvg, downloadSvg } from '../utils/svgExport';
 import { ZoomIn, ZoomOut, Maximize2, Move, Target } from 'lucide-react';
@@ -1196,7 +1197,9 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
           `
         } : themeConfig.mermaidConfig;
 
-        mermaid.initialize({
+        // The default (11.x) or, via the ?mermaid= test switch, 12.x.
+        const renderer = await loadMermaid();
+        renderer.initialize({
             startOnLoad: false,
             suppressErrorRendering: true,
             ...configWithFont,
@@ -1204,7 +1207,7 @@ const Preview = forwardRef<PreviewHandle, PreviewProps>(({ code, themeConfig, cu
             securityLevel: 'strict',
         });
 
-        const { svg: renderedSvg } = await mermaid.render(id, code);
+        const { svg: renderedSvg } = await renderer.render(id, code);
         
         // Post-process SVG
         let processedSvg = renderedSvg;
